@@ -1,0 +1,30 @@
+<div class="login ">
+
+	<h1 style="text-align: center; margin: 3%;"> {{sLoginBanner}}</h1>
+
+	<form [formGroup]="loginForm" id="login" autocomplete="on" >
+		
+		<div>
+			<!--<label for="username" width="20%">Username</label>-->
+			<input type="email" autofocus  id = "login" name="username" autocomplete="on" formControlName="email" #username  placeholder="email adres" (click)="errorclear()" autocomplete="on">
+		</div>
+		<br/>
+		<div>
+			<!--<label for="password" width="30%">Password</label>-->
+			<input type="password" formControlName="password" #password name="password" id="password" placeholder="Password"  (click)="errorclear()">
+			<div [hidden]="bHidePasswordControle">
+				<!--<label for="password_controle">Password (controle)</label>-->
+				<input type="password" formControlName="password_controle" #password id="password_controle" placeholder="Password">
+			</div>
+		</div>
+		<br>
+		<div style="text-align: center">
+			<span (mouseover)="LoginDisabledMsg()">
+			<span [hidden]="!bConnected"><button style="width: auto;padding-left: 10%;padding-right:10%" [disabled] = "!loginForm.valid" (click)="login($event)" class="btn btn-default login">{{sLoginLabel}}</button></span>
+			<span [hidden] = "hideOffline"><button style="width: auto;padding-left: 10%;padding-right:10%" (click)="offlineinit(email)"  class="btn btn-default login">off-line</button></span>
+			</span>
+			<p >{{sErrorMsg}}</p>
+		</div>
+
+	</form>
+</div>

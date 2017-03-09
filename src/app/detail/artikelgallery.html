@@ -1,0 +1,32 @@
+<div class="container-fluid">
+
+    <p-dialog id="artikelimages" [visible]="qtService.bArtikelGallery" [closable]="false" position="center top" [responsive]="true"
+        [width]="1300" [style]="{'overflow':'scroll','background-color' :'#ffffe6'}">
+
+        <p-dataGrid [value]="qtService.artgallery" [paginator]="true" [rows]="qtService.galleryrows">
+            <p-header>
+
+                <button type="button" pButton style="margin-right:15%" (click)="qtService.toggle_images_size()" [label]="qtService.gallerybutton_label"></button>
+{{qtService.sGalleryHeader}}
+<button type="button" pButton style="margin-left:15%" (click)="qtService.toggleArtikelGallery()" label="verberg"></button>
+
+</p-header>
+
+<div>
+    <template let-artikel pTemplate="item">
+        
+        <div style="padding:3px" [class]="qtService.galleryclass" (click)="qtService.art_add_from_gallery(artikel.artnr)">
+<p-panel [header]="artikel.artnr + '         '" [style]="{'text-align':'center'}">
+    <img style="width:100%" src="fotoos\{{artikel.artnr}}.jpg">
+
+<hr class="ui-widget-content" style="border-top:0"> {{artikel.voorraad}}
+
+</p-panel>
+</div>
+<!--</div>-->
+</template>
+</div>
+</p-dataGrid>
+
+</p-dialog>
+</div>

@@ -1,0 +1,31 @@
+<div > 
+        <p-dialog id="artikelimages" [visible]="qtService.bArtikelGallery" [closable]="false" 
+            position="center top" [responsive]="true" [width]="1360" [height] = "800" [style]="{'overflow':'scroll','background-color' :'#ffffe6'}">
+<p-header>
+    
+        <span>{{qtService.sGalleryHeader}}</span> 
+        <span id="closegallery"><button id="closegallery" pButton style="float:right"   icon="fa-min" (click)="qtService.HideMessage()" label="aaaaaaaaaaaaaaaaaasluit"></button></span>
+    
+    </p-header>
+       <div  >
+        <span style="float: left" class="col-md-1" *ngFor=" let artikel of  qtService.all_art " >
+            <span>
+             
+               <img [src]="'http://localhost:4200/fotoos/' + artikel.artikelnr + '.jpg'" alt=""  class="img-responsive" (click)="qtService.art_add(artikel.artikelnr)" 
+               style="height:100px; width:80px;">
+               <br>
+               {{artikel.artikelnr}}
+               <br> 
+                
+
+               voorraad: {{artikel.voorraad}}
+                
+            </span>
+        </span>
+
+
+</div>
+
+</p-dialog>
+
+</div>

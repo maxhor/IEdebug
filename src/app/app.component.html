@@ -1,3 +1,78 @@
 <h1>
-  {{title}}
+
+
+	<navbar [hidden]="!qtService.bLoggedIn"></navbar>
+
+	<login [hidden]="qtService.bLoggedIn" (LoggedIn)="LoggedIn($event)" (OfflineInit)="offLineInit($event)" (FormBuiltReady)="test()"></login>
 </h1>
+<div>
+<kop-info ></kop-info>
+
+
+
+<div class="mydialog">
+	<p-dialog id="mydialog" [header]="qtService.sDialogHeader" [visible]="qtService.bDialog_NeeJa" showEffect="fade" [closable]="false">
+		<p class="message">{{qtService.sDialogMsg}}</p>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="button" style="float: left;" pButton icon="fa-close" (click)="qtService.deleteItem(false)" label="Nee"></button>
+<button type="button" style="float: right;" pButton icon="fa-check" (click)="qtService.deleteItem(true)" label="Ja"></button>
+</div>
+</footer>
+</p-dialog>
+</div>
+
+<div class="mydialog">
+	<p-dialog id="mydialog" [header]="qtService.sDialogHeader" modal="true" [visible]="qtService.bDialog_JaNee" showEffect="fade"
+		[closable]="false">
+		<p class="message"> {{qtService.sDialogMsg}}</p>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="button" style="float: left;" pButton icon="fa-close" (click)="qtService.execute_request()" label="Ja"></button>
+<button type="button" style="float: right;" pButton icon="fa-check" (click)="qtService.hide_confirm_dialog()" label="Nee"></button>
+</div>
+</footer>
+</p-dialog>
+</div>
+
+<div class="mydialog">
+	<p-dialog id="mydialogreverse" [header]="qtService.sDialogHeader" modal="true" [visible]="qtService.bDialog_JaNeeReverse"
+		showEffect="fade" [closable]="false">
+		<p class="message">{{qtService.sDialogMsg}}</p>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="button" style="float: left;" pButton icon="fa-close" (click)="qtService.hide_confirm_dialog()" label="Ja"></button>
+<button type="button" style="float: right;" pButton icon="fa-check" (click)="qtService.execute_request()" label="Nee"></button>
+</div>
+</footer>
+</p-dialog>
+</div>
+
+<div>
+	<p-dialog id="mydialog" [header]="qtService.sDialogHeader" [visible]="qtService.bMessage" showEffect="fade" [closable]="false">
+		<p class="message">{{qtService.sDialogMsg}}</p>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="button" style="float: none;" pButton icon="fa-check" (click)="qtService.HideMessage(true)" label="Ok"></button>
+</div>
+</footer>
+</p-dialog>
+</div>
+
+<div class="error">
+	<p-dialog id="error" [header]="qtService.sErrorHeader" [visible]="qtService.bError" [closable]="false" showEffect="fade">
+
+		<p id="errormsg">{{qtService.sErrorMsg}}</p>
+		<footer id="error">
+			<button id="error" type="button" style="margin: auto;" pButton icon="fa-min" (click)="qtService.HideErrorMessage()" label="Ok"></button>
+</footer>
+</p-dialog>
+</div>
+
+<artikelgallery></artikelgallery>
+
+
+
+<details-info [hidden]="!qtService.bLoggedIn" #details></details-info>
+</div>
+<adres-info [hidden]="!qtService.bAdresInfo" ></adres-info>
