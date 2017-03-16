@@ -34,7 +34,7 @@ import { qtService } from '../services/qtrack.service';
         <button id="next" type="button" class="btn btn-custom" (click)="move(1)" (mouseover)="qtService.showtooltip($event)" [disabled] ="qtService.disable_moveNext">   <span class="fa fa-step-forward"></span>Volgend</button>
         <button id="last" type="button" class="btn btn-custom" (click)="move(9999)" (mouseover)="qtService.showtooltip($event)" [disabled] ="qtService.disable_moveEnd"><span class="fa fa-fast-forward"></span>Laatste</button>
        
-       <button  type="submit" class="btn btn-custom" (click)="qtService.savetx()" [disabled] ="!qtService.bSummy"
+       <button  type="submit" class="btn btn-custom" (click)="qtService.Excel()" [disabled] ="!qtService.bSummy"
               [disabled] ="qtService.disable_save"><span id="excel" (mouseover)="qtService.showtooltip($event)"  
               class="fa fa-floppy-o"></span> <span id="excel" (mouseover)="qtService.showtooltip($event)" >Excel2</span></button>
         </div>  

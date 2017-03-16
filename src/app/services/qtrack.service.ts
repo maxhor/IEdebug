@@ -2,6 +2,7 @@ import { Injectable, ViewChild, ViewChildren, QueryList, ElementRef, EventEmitte
 import { Http, Headers } from '@angular/http';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/mergeMap';
 //import { LocalStorageService } from 'angular-2-local-storage';
 import { ServerConstants } from './constants.on_server';
 
@@ -55,7 +56,7 @@ export class qtService {
 
 
 
-
+    disable_nwArtikel = true
     disable_search = true;
     disable_save = true;
     disable_actions = false;
@@ -87,6 +88,7 @@ export class qtService {
     adres_idx = -1;
     datum_idx = 0;
     order_idx = 0;
+    ordernr_idx = -1;
     relatienr_idx = -1
     rowid_relatie_idx = -1;
     rowid_adres_idx = -1;
@@ -94,6 +96,7 @@ export class qtService {
     matrixprijs = 0;
     move_direction = 0;
     galleryrows = 18;
+    gallerypagelinks = 10;
     tttop = "";
     ttleft = "";
     sToolTip = "";
@@ -110,7 +113,7 @@ export class qtService {
     formdef_id = "";
     button_ovt_label = "overzicht";
     button_voorraad_label = "voorraad";
-    gallerybutton_label = "grote plaatjes";
+    gallerybutton_label = "kleine plaatjes";
     nwartikelctrl = "";
     matrixtitle = "";
     oldSeizoen = "";// should in fact be dealt via additional attribute 'oldvalue' to 'control' But that involves change of control.reset method because oldvalue  
@@ -181,7 +184,9 @@ export class qtService {
     ServerConstants;
     keepEvent: any;
     column_ID: any;
-    galleryclass = "col-xs-12 col-sm-3 col-md-1";
+    //galleryclass = "col-xs-12 col-sm-3 col-md-1";
+    galleryclass = "col-xs-12 col-sm-4 col-md-2"
+
     iteminputstyle = { 'padding': '0px', 'textalign': 'left' }
     colssummy = [
         {
@@ -298,10 +303,13 @@ export class qtService {
                     if (!this.kopForm.controls[ctrl].valid) {
                         for (var msg in this.kopForm.controls[ctrl].errors) {
                             if (this.sDialogMsg != '') {
-                                this.sDialogMsg = this.sDialogMsg + '\n'
+                                this.sDialogMsg = this.sDialogMsg + "\n";
                             }
                             if (msg == "required") {
                                 msg = "ontbreekt";
+                            }
+                            if (msg == "pattern") {
+                                msg = "ongeldig";
                             }
                             this.sDialogMsg = this.sDialogMsg + ctrl + ": " + msg;
                         }
@@ -316,10 +324,13 @@ export class qtService {
                     if (!this.adresForm.controls[ctrl].valid) {
                         for (var msg in this.adresForm.controls[ctrl].errors) {
                             if (this.sDialogMsg != '') {
-                                this.sDialogMsg = this.sDialogMsg + '\n'
+                                this.sDialogMsg = this.sDialogMsg; //  new line with /n or \n does not work 
                             }
                             if (msg == "required") {
                                 msg = "ontbreekt";
+                            }
+                            if (msg == "pattern") {
+                                msg = "ongeldig";
                             }
                             this.sDialogMsg = this.sDialogMsg + ctrl + ": " + msg;
                         }
@@ -344,7 +355,7 @@ export class qtService {
     };
     initUser_part1(user: user) {
         this.bLoggedIn = true;
-        this.cursorShape = "wait";
+
         this.bHideToolTip = Boolean(window.localStorage.getItem('bHideToolTip'));
 
         this.bHidePasswordControle = true;
@@ -387,18 +398,51 @@ export class qtService {
     }
 
     initUser_part2() {
+        // var PostcodeObservable = this.PostcodeApi("1600AA");
+        // PostcodeObservable.subscribe(response => {
+
+        //     var data = response.json();
+        //     var headers = response.headers;
+        //     if (data._embedded.addresses.length > 0) {
+        //         this.adresForm.get("straat").setValue(data._embedded.addresses[0].street);
+        //         this.adresForm.get("woonplaats").setValue(data._embedded.addresses[0].city.label);
+        //     }
+        //     else {
+        //         this.adresForm.get("straat").setValue(null);
+        //         this.adresForm.get("woonplaats").setValue(null);
+        //     }
+
+        //     return null;
+        // },
+        //     error => {
+        //         this.sErrorHeader = "ophalen postcode mislukt";
+        //         this.bError = true;
+        //         switch (error.status) {
+        //             case 429:
+        //                 this.sErrorMsg = "limiet overschreden, response status " + error.status;
+        //                 break;
+        //             default:
+        //                 this.sErrorMsg = "response: " + error.status;
+        //                 break;
+        //         }
+        //     });
+
+
         this.lookup_generic("tbversion").subscribe(
             data => {
                 this.initUser_part3(data);
                 //  var t = JSON.stringify(this.tbversioninit)
             }
         )
+
     }
 
 
 
 
     initUser_part3(serverversions) {
+        this.cursorShape = "wait";
+        this.disable_nwArtikel = true;
         var tbversion: tbversion = {};
         if (serverversions.rows != undefined) {
             for (let i = 0; i < serverversions.rows.length; i++) {
@@ -478,7 +522,8 @@ export class qtService {
 
         if (this.tbversion.artikelen != tbversion.artikelen || window.localStorage.getItem('artikelen') == null || this.user.relatienr == "0") {
             this.bError = false;
-            this.lookup_art("artikellookup").subscribe(
+
+            this.lookup_art("artikellookup").subscribe( //context is quite unclear to me. 
                 data => {
                     if (data[0]["pair"] != undefined) {
                         if (data[0].pair[0] == "error") {
@@ -488,26 +533,24 @@ export class qtService {
                     }
                     else {
                         this.all_art = data;
-                        this.createArtGallery();
                         this.tbversion.artikelen = tbversion.artikelen;
                         window.localStorage.setItem('artikelen', JSON.stringify(data));
                         window.localStorage.setItem('tbversion', JSON.stringify(this.tbversion));
-                        this.bArtikelenFetched = true;
-                        this.disable_search = false;
-                        this.disable_clear = false;
-                        if (this.bSeizoenIsValid) {
-                            this.detailForm.controls["nwartikel"].reset({ value: null, disabled: false });
-                        }
+                        this.ProcessAllArt();//via calling this function, I get the proper qtService context for all variables. Directly here, context not ok 
+                        //whatever. 
+
                     }
                 });
         }
         else {
             this.all_art = JSON.parse(window.localStorage.getItem('artikelen'));
             this.createArtGallery();
+            this.cursorShape = "auto";
+            this.disable_nwArtikel = false;
             this.bArtikelenFetched = true;
             this.disable_search = false;
             this.disable_clear = false;
-            this.cursorShape = "auto";
+
             if (this.bSeizoenIsValid) {
                 this.detailForm.controls["nwartikel"].reset({ value: null, disabled: false });
             }
@@ -526,7 +569,7 @@ export class qtService {
                     else {
                         this.bVoorraadFetched = true;
                         this.updateArtGalleryVoorraad();
-              
+
                     }
 
                 });
@@ -565,6 +608,26 @@ export class qtService {
 
     }
 
+    ProcessAllArt() {
+        this.all_art = this.all_art.map((art) => {
+            if (art.omschr == " ") {
+                art.omschr = art.artikelnr
+            };
+            return art;
+        });
+        this.createArtGallery(); //under subscribe, this=safesubscriber. Still, this works. Whatever
+        this.cursorShape = "auto";
+        this.disable_nwArtikel = false;
+
+
+        this.bArtikelenFetched = true;
+        this.disable_search = false;
+        this.disable_clear = false;
+        if (this.bSeizoenIsValid) {
+            this.detailForm.controls["nwartikel"].reset({ value: null, disabled: false });
+        }
+
+    }
 
     offLineInit(email) {
         if (email.substr(0, 4) != "test") {
@@ -644,6 +707,9 @@ export class qtService {
                 case "klantlookup":
                     _url = "mockapi/klant_lookup.jsn";
                     break;
+                case "adreslookup":
+                    _url = "mockapi/adres_lookup.jsn";
+                    break;
                 case "voorraadlookup":
                     _url = "mockapi/voorraad_lookup.jsn";
                     break;
@@ -659,7 +725,7 @@ export class qtService {
             if (_url != '') {
                 var data = this.http.get(_url);
                 var data1 = data.map(res => res.json());
-                // var data1=data.map(res => JSON.parse(JSON.stringify(res)));
+                
                 return data1;
             }
             else {
@@ -821,27 +887,33 @@ export class qtService {
                                 this.KlantExists = this.KlantExists.bind(this);
                                 validatorarray[0] = this.KlantExists;
                             }
-                            else if (field.type == "email") {
-                                this.EmailCheck = this.EmailCheck.bind(this);
-                                validatorarray[0] = this.EmailCheck;
+                            // else if (field.type == "email") {
+                            //     this.EmailCheck = this.EmailCheck.bind(this);
+                            //     validatorarray[0] = this.EmailCheck;
 
-                            }
-                            if (field.maxlen != 0 && field.maxlen > 0) {
-                                validatorarray.push(this.MaxLenCheck(field.maxlen));
+                            // }
+                            // if (field.maxlen != 0 && field.maxlen > 0) {
+                            //     validatorarray.push(this.MaxLenCheck(field.maxlen));
 
-                            }
+                            // }
                             if (field.required) {
                                 validatorarray.push(Validators.required);
+
                             }
 
-                            if (field.format == "postcode") {// max is 200 requests a day. so dont waste in development
+                            if (field.name == "qq_postcode") {// max is 200 requests a day. so dont waste in development
                                 this.GetAdres = this.GetAdres.bind(this);
+                                //asynch_validatorarray.push(setTimeout(this.GetAdres,1000));
                                 asynch_validatorarray.push(this.GetAdres);
-                                field.format = "[0-9]{4}[A-Za-z]{2}";
+
+                                field.format = "^[0-9]{4}[A-Z]{2}$";
+
                             }
-                            if (field.format != null) {
-                                this.FormatCheck = this.FormatCheck.bind(this);
-                                validatorarray.push(this.FormatCheck(field.title, field.minlen, field.format));
+                            if (field.format.length > 2) {
+                                validatorarray.push(Validators.pattern(field.format));
+
+                                // this.FormatCheck = this.FormatCheck.bind(this);
+                                // validatorarray.push(this.FormatCheck(field.title, field.minlen, field.format));
                             }
 
 
@@ -991,7 +1063,7 @@ export class qtService {
                     _tthis.disable_save = true;
 
                     _tthis.getDetailsMatrix(_tthis);
-               //     _tthis.find_seizoen(data["bootstrapcolumns"][0].fielddefs[_tthis.seizoen_idx].value);
+                    //     _tthis.find_seizoen(data["bootstrapcolumns"][0].fielddefs[_tthis.seizoen_idx].value);
                     if (_tthis.rowsvalues.length > 0) {
                         _tthis.getmatrixrows(_tthis.findartikel(_tthis.rowsvalues[0]));
                         _tthis.getvrrdmatrixrows();
@@ -1036,7 +1108,7 @@ export class qtService {
             _tthis.copyFormDefToFormControls();
 
             _tthis.getDetailsMatrix(_tthis);
-         //   _tthis.find_seizoen(data["bootstrapcolumns"][0].fielddefs[_tthis.seizoen_idx].value);
+            //   _tthis.find_seizoen(data["bootstrapcolumns"][0].fielddefs[_tthis.seizoen_idx].value);
             if (_tthis.rowsvalues.length > 0) {
                 _tthis.getmatrixrows(_tthis.findartikel(_tthis.rowsvalues[0]));
                 _tthis.getvrrdmatrixrows();
@@ -1061,17 +1133,18 @@ export class qtService {
         ;
     }
 
-    gettx_fromlocalstorage(index) {
-        if (this.formdefs_in_localstorage.length > 0) {
-            this.formdef = JSON.parse(window.localStorage.getItem("order_" + this.formdefs_in_localstorage[index]));
-            this.copyFormDefToFormControls();
+    gettx_fromlocalstorage(id) {
 
-            this.getDetailsMatrix(this);
-            if (this.rowsvalues.length > 0) {
-                this.getmatrixrows(this.findartikel(this.rowsvalues[0]));
-            }
+        this.formdef = JSON.parse(window.localStorage.getItem(id));
+        this.copyFormDefToFormControls();
 
+        this.getDetailsMatrix(this);
+        if (this.rowsvalues.length > 0) {
+            this.getmatrixrows(this.findartikel(this.rowsvalues[0]));
         }
+        this.bDetailChanged = false
+
+
 
     }
 
@@ -1079,14 +1152,14 @@ export class qtService {
         this.formdefs_in_localstorage.length = 0;
         for (var formdef in window.localStorage) {
             if (formdef.substr(0, 6) == "order_") {
-                this.formdefs_in_localstorage.push(formdef.slice(6))
+                this.formdefs_in_localstorage.push(formdef.slice(0))
             }
         }
     }
 
     show_formdefs_from_localstorage() {
         this.get_allformdefs_from_localstorage();
-        this.gettx_fromlocalstorage(0);
+        this.gettx_fromlocalstorage(this.formdefs_in_localstorage[0]);
         this.enableMoveButtons();
     }
 
@@ -1125,9 +1198,10 @@ export class qtService {
         }
 
         window.localStorage.setItem(this.formdef_id, JSON.stringify(this.formdef));
-        this.kopForm.reset();
-        this.formdef = JSON.parse(window.localStorage.getItem(this.formdef_id));
-        this.copyFormDefToFormControls();
+        this.clear();
+        this.gettx_fromlocalstorage(this.formdef_id);
+        this.formdef_id = "";
+
         this.sDialogMsg = "order is bewaard op dit werkstation";
         this.sDialogHeader = "order ";
         this.bMessage = true;
@@ -1159,6 +1233,7 @@ export class qtService {
         // headers.append('Accept', 'q=0.8;application/json;q=0.9');
         if (!this.disable_actions) {
             this.disable_actions = true;
+            this.disable_save = true;
             this.http.post(_url, this.form_content, { headers: this.ServerConstants.headers }).
                 map(res => res.json()).subscribe((data) => {
                     //  console.log(data);
@@ -1169,7 +1244,7 @@ export class qtService {
                         _tthis.formdef = data;
                         _tthis.bKopChanged = false;
                         _tthis.bDetailChanged = false;
-                        _tthis.disable_save = true;
+
 
 
                         _tthis.getDetailsMatrix(_tthis);
@@ -1185,7 +1260,7 @@ export class qtService {
                         _tthis.sErrorMsg = data.Message;
                         _tthis.sErrorHeader = data.Status;
                         _tthis.bError = true;
-                        // _tthis.disable_save = false;
+                        _tthis.disable_save = false;
 
                     }
                     _tthis.bSaving = false;
@@ -1208,7 +1283,7 @@ export class qtService {
             if (this.user["defaults"][i].pair[0] == 'seizoen') {
                 if (this.kopForm.controls["seizoen"] != undefined) {
                     if (this.kopForm.controls["seizoen"].disabled) {
-                   //     this.find_seizoen(this.user["defaults"][i].pair[1]);//must be called explicitly because in case field seizoen is diabled,                
+                        //     this.find_seizoen(this.user["defaults"][i].pair[1]);//must be called explicitly because in case field seizoen is diabled,                
                         this.detailForm.controls["nwartikel"].reset({ value: null, disabled: false }); //seizoenexists is not called from validator 
                         this.bSeizoenIsValid = true;
                     }
@@ -1473,7 +1548,7 @@ export class qtService {
                 this.rspointer = this.rowids.length - 1;
 
         }
-        if (this.bOffLine || this.bSynchronising) this.gettx_fromlocalstorage(this.rspointer);
+        if (this.bOffLine || this.bSynchronising) this.gettx_fromlocalstorage(this.formdefs_in_localstorage[this.rspointer]);
         else this.gettx(this.rowids[this.rspointer]);
 
 
@@ -1510,13 +1585,8 @@ export class qtService {
     }
 
     clearrequest() {
-        if (this.bSynchronising) {
-            this.request = "clearfromlocalstorage";
-            this.bDialog_JaNee = true;
-            this.sDialogHeader = "bevestigen";
-            this.sDialogMsg = "verwijderen van dit werkstation?";
-        }
-        else if (this.bDetailChanged || !this.kopForm.pristine) {
+
+        if (this.bDetailChanged || !this.kopForm.pristine) {
             this.sDialogMsg = "Er zijn wijzigingen die nog niet zijn bewaard. Cancel ?";
             this.sDialogHeader = "er zijn wijzigingen die niet zijn opgeslagen";
             this.bDialog_JaNeeReverse = true;
@@ -1553,7 +1623,7 @@ export class qtService {
         }
         else if (this.request == "synchronise") {
             this.bSynchronising = true;
-            this.gettx_fromlocalstorage(0);
+            this.gettx_fromlocalstorage(this.formdefs_in_localstorage[0]);
             this.enableMoveButtons();
 
 
@@ -1571,27 +1641,27 @@ export class qtService {
     }
 
     hide_confirm_dialog() {
-        let bLocalStorageSynchronising = false;
+        //let bLocalStorageSynchronising = false;
         if (this.request == "clearfromlocalstorage") {
-            if (this.formdefs_in_localstorage.length > 0) {
+            // if (this.formdefs_in_localstorage.length > 0) {
 
-                let bLocalStorageSynchronising = true;
-                this.bDialog_JaNee = true;
-                this.sDialogHeader = "bevestig";
-                this.sDialogMsg = "stoppen met synchroniseren?"
-                this.request = "synchronise_stop";
+            //let bLocalStorageSynchronising = true;
+            this.bDialog_JaNee = true;
+            this.sDialogHeader = "bevestig";
+            this.sDialogMsg = "stoppen met synchroniseren?"
+            this.request = "synchronise_stop";
 
-            }
-            else {
-                this.bSynchronising = false;
-            }
+            //}
+            //else {
+            this.bSynchronising = false;
+            //}
         }
-        if (!bLocalStorageSynchronising) {
-            this.bDialog_JaNee = false;
-            this.bDialog_JaNeeReverse = false;
-            this.bDialog_NeeJa = false;
-            this.request = "";
-        }
+        //if (!bLocalStorageSynchronising) {
+        this.bDialog_JaNee = false;
+        this.bDialog_JaNeeReverse = false;
+        this.bDialog_NeeJa = false;
+        this.request = "";
+        //}
 
     }
 
@@ -1613,7 +1683,7 @@ export class qtService {
         this.nwArtikel = "";
         this.matrixtitle = "";
         this.voorraadtitle = "";
-        this.formdef_id = "";
+
         this.adresheader = "";
         this.bhidevrrdbutton = true;
         this.bKopChanged = false;
@@ -1637,7 +1707,7 @@ export class qtService {
         this.disable_tabel = true;
         this.rowids = [];
         this.totals.length = 0;
-        this.bSynchronising = false;
+        //this.bSynchronising = false;
         this.bNewRelatie = false;
         this.bValidatingFromAutocomplete = false;
 
@@ -1656,10 +1726,17 @@ export class qtService {
             this.getblank();
         }
 
+        if (this.bSynchronising) {
+            this.request = "clearfromlocalstorage";
+            this.bDialog_JaNee = true;
+            this.sDialogHeader = "bevestigen";
+            this.sDialogMsg = "verwijderen van dit werkstation?";
+        }
+
     }
 
     clearfromlocalstorage() {
-        localStorage.removeItem("order_" + this.formdefs_in_localstorage[this.rspointer]);
+        localStorage.removeItem(this.formdefs_in_localstorage[this.rspointer]);
         this.formdefs_in_localstorage.splice(this.rspointer, 1);
         if (this.rspointer + 1 > this.formdefs_in_localstorage.length) {
             this.rspointer = this.formdefs_in_localstorage.length - 1;
@@ -1668,7 +1745,7 @@ export class qtService {
             this.bSynchronising = false;
         }
         else {
-            this.gettx_fromlocalstorage(this.rspointer);
+            this.gettx_fromlocalstorage(this.formdefs_in_localstorage[this.rspointer]);
         }
     }
 
@@ -1682,16 +1759,27 @@ export class qtService {
     }
 
     toggle_images_size() {
+
+        this.createArtGallery();
+        this.updateArtGalleryVoorraad();
+        let t = this.artgallery.pop();
+        //setTimeout(this.artgallery.push(t),1000);
+
+
+
         if (this.galleryclass == "col-xs-12 col-sm-3 col-md-1") {
             this.galleryclass = "col-xs-12 col-sm-4 col-md-2";
             this.gallerybutton_label = "kleine plaatjes";
             this.galleryrows = 18;
+            this.gallerypagelinks = 3;
         }
         else {
             this.galleryclass = "col-xs-12 col-sm-3 col-md-1";
             this.gallerybutton_label = "grote plaatjes";
             this.galleryrows = 48;
+            this.gallerypagelinks = 6;
         }
+
     }
 
     toggle_editmode() {
@@ -1877,7 +1965,10 @@ export class qtService {
                             break;
                         case "datum":
                             this.datum_idx = j;
+                            break;
+                        case "ordernr":
                             this.order_idx = i;
+                            this.ordernr_idx = j;
                             break;
                         case "rowid":
                             if (this.formdef["bootstrapcolumns"][i].fielddefs[j].tbname == "relatie")
@@ -2009,7 +2100,13 @@ export class qtService {
         var ctrl;
         let adres;
         if (!this.bNewRelatie) {
-            adres = this.all_adres["rows"].find(row => row.values[1] == relatienr && row.values[2] == adreslabel).values;
+            let index = this.all_adres["rows"].find(row =>
+                row.values[1] == relatienr && row.values[2] == adreslabel);
+            if (index >= 0) {
+                adres = this.all_adres[index].values;
+            }
+            else return;//if not found: just do not try to update adres in memory. Not too important 
+
         }
 
         else {
@@ -2030,7 +2127,7 @@ export class qtService {
                 }
             }
         }, this)
-        adres[0] = this.formdef["bootstrapcolumns"][this.adres_idx].fielddefs[this.rowid_adres_idx];
+        adres.values[0] = this.formdef["bootstrapcolumns"][this.adres_idx].fielddefs[this.rowid_adres_idx];
 
     }
 
@@ -2882,9 +2979,9 @@ export class qtService {
     }
 
     SeizoenExists(control: FormControl) {
-       
-        if (control["oldvalue"] !=control.value) {
-            
+
+        if (control["oldvalue"] != control.value) {
+
             if (this.all_seizoen["rows"].length > 0) {
                 if (!this.find_seizoen(control.value)) {
                     this.detailForm.controls["nwartikel"].reset({ value: null, disabled: true });
@@ -2893,8 +2990,8 @@ export class qtService {
                         "seizoen niet ingevuld of ongeldig": true
                     };
                 }
-                else{
-                    control["oldvalue"] =control.value;
+                else {
+                    control["oldvalue"] = control.value;
                 }
             }
             this.detailForm.controls["nwartikel"].reset({ value: null, disabled: false });
@@ -2907,7 +3004,7 @@ export class qtService {
     EmailCheck(control: FormControl) {
         if (! /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(control.value)) {
             return {
-                "email adres ongeldig": true
+                " ongeldig": true
             };
         }
     }
@@ -2927,9 +3024,10 @@ export class qtService {
             // }
             let bError = !check.test(control.value);
             if (bError) {
-                let msg = fieldname + "is ongeldig";
+                let msg = " is ongeldig";
                 return { [msg]: true };
             }
+            else return null;
 
         }
     }
@@ -3054,21 +3152,16 @@ export class qtService {
 
     GetAdres(control: FormControl) {
 
-
-        // if(control.value.length==6){
-        // this.PostcodeApi(control.value).subscribe(data=>{
-        //     this.kopForm.get("straat").setValue(data._embedded.addresses[0].street);
-        //     this.kopForm.get("woonplaats").setValue(data._embedded.addresses[0].city.label);
-        //     return null; 
-        // },
-        // )
-        // }
-        // else return null;
-
-        //control.setValue(control.value.toUpperCase());
-
-        if (!control.pristine && control.valid) {
+        if (!control.pristine) {
+            let check = /^[0-9]{4}[A-Z]{2}$/;
+            if (!check.test(control.value))
+                return ({
+                    ongeldig: true
+                })
             var PostcodeObservable = this.PostcodeApi(control.value);
+
+
+
             PostcodeObservable.subscribe(response => {
 
                 var data = response.json();
@@ -3082,7 +3175,7 @@ export class qtService {
                     this.adresForm.get("woonplaats").setValue(null);
                 }
                 control.markAsPristine()
-                control.setValue(control.value.toUpperCase())
+                //control.setValue(control.value.toUpperCase())
                 return null;
             },
                 error => {
@@ -3109,6 +3202,7 @@ export class qtService {
 
 
     PostcodeApi(postcode: string) {
+
         if (postcode.length == 6) {
             var headers = new Headers();
             headers.append('X-Api-Key', 'IqaKLykXtV5zAbpCIMALK1h9FttdLgvD6xRSdySu');
@@ -3129,24 +3223,26 @@ export class qtService {
             .filter(artikel =>
                 (artikel.seizoen === this.kopForm.controls["seizoen"].value || artikel.seizoen == "Basic"))
             .map(function (artikel) {
-              //  let voorraad = _tthis.TotalVrrdForArtikel(artikel.artikelnr);
+                //  let voorraad = _tthis.TotalVrrdForArtikel(artikel.artikelnr);
                 return {
                     artnr: artikel.artikelnr,
+                    omschr: artikel.omschr,
                     voorraad: null
                 }
             });
     }
 
     updateArtGalleryVoorraad() {
-       
-        this.artgallery.forEach(art=>{
-            art.voorraad=this.TotalVrrdForArtikel(art.artnr);
+
+        this.artgallery.forEach(art => {
+            art.voorraad = this.TotalVrrdForArtikel(art.artnr);
         })
     }
 
     find_seizoen(searchargument) {
-        if (this.oldSeizoen==searchargument){
-            return;
+        if (this.oldSeizoen == searchargument || searchargument == "") {
+            this.bSeizoenIsValid = true;
+            return true;
         }
         if (this.all_seizoen["rows"].length == 0) { return false }
         this.seizoen = {};
@@ -3161,7 +3257,7 @@ export class qtService {
             if (!isNaN(year) && !isNaN(month) && !isNaN(day)) { }
             this.seizoen["enddate"] = new Date(year, month, day);
             this.bSeizoenIsValid = true;
-            this.oldSeizoen=searchargument;
+            this.oldSeizoen = searchargument;
             this.createArtGallery();
             this.updateArtGalleryVoorraad();
 
@@ -3189,11 +3285,11 @@ export class qtService {
     KlantExists(control: FormControl) {
 
 
-        if (!this.kopForm.pristine && control.value.length > 3) {
+        if (!this.kopForm.pristine && control.value.length >= 3) {
 
             let this_klant = this.all_klant["rows"].find(row => row.values[1] == control.value);
             if (this_klant == null) {
-                this.clearklant(1);
+                // this.clearklant(1);
                 return {
                     "niet bestaande klant": true
                 };
@@ -3201,9 +3297,10 @@ export class qtService {
             else {
                 this.bValidatingFromAutocomplete = true;
                 this.populate_relatie(this_klant);
+                return null;
             }
         }
-        return null;
+
     }
 
     SaveToLocalTextFile() {
@@ -3246,7 +3343,9 @@ export class qtService {
                 visible_fields.push([]);
                 for (let fieldcount = 0; fieldcount < this.formdef["bootstrapcolumns"][btccount]["fielddefs"].length; fieldcount++)
                     if (!this.formdef["bootstrapcolumns"][btccount]["fielddefs"][fieldcount].hidden &&
-                        !(btccount == this.relatie_idx && fieldcount == this.naam_idx)) {
+                        this.formdef["bootstrapcolumns"][btccount]["fielddefs"][fieldcount].name != "naam" &&
+                        this.formdef["bootstrapcolumns"][btccount]["fielddefs"][fieldcount].name != "bcomplete" &&
+                        this.formdef["bootstrapcolumns"][btccount]["fielddefs"][fieldcount].name != "valbedrag") {
                         visible_fields[btccount].push([this.formdef["bootstrapcolumns"][btccount]["fielddefs"][fieldcount].title, this.formdef["bootstrapcolumns"][btccount]["fielddefs"][fieldcount].value]);
                         btcfield_countmax++;
                     }
@@ -3261,7 +3360,9 @@ export class qtService {
 
         }
 
-        sCSV = " Order voor\t" + naam + "\r\n" + "\r\n";
+        sCSV = " Order voor\t" + naam + "\t\t" + "Order_" + this.formdef["bootstrapcolumns"][this.order_idx].fielddefs[this.ordernr_idx].value + "_" +
+            this.formdef["bootstrapcolumns"][this.relatie_idx].fielddefs[this.naam_idx].value + "_" +
+            this.formdef["bootstrapcolumns"][this.order_idx].fielddefs[this.datum_idx].value + "\r\n" + "\r\n";
 
         for (let fieldcount = 0; fieldcount < field_countmax; fieldcount++) {
             for (let btccount = 0; btccount < visible_fields.length; btccount++) {
@@ -3278,11 +3379,7 @@ export class qtService {
 
                 }
             }
-            if (fieldcount == 0) {
-                sCSV = sCSV + "\t" + "bestandnaam" + "\t" + "Order_" + this.formdef["bootstrapcolumns"][this.relatie_idx].fielddefs[this.naam_idx].value + "_" +
-                    this.formdef["bootstrapcolumns"][this.order_idx].fielddefs[this.datum_idx].value;
 
-            }
             sCSV = sCSV + "\r\n";
         }
 
@@ -3313,6 +3410,14 @@ export class qtService {
         for (let i = 1; i < this.totals.length; i++) {
             sCSV = sCSV + this.totals[i] + "\t";
         }
+
+        sCSV = sCSV + "\r\n" + "\r\n";
+        sCSV = sCSV + "bestandnaam" + "\t\t" + "Order_" + this.formdef["bootstrapcolumns"][this.order_idx].fielddefs[this.ordernr_idx].value + "_" +
+            this.formdef["bootstrapcolumns"][this.relatie_idx].fielddefs[this.naam_idx].value + "_" +
+            this.formdef["bootstrapcolumns"][this.order_idx].fielddefs[this.datum_idx].value + "\r\n" + "\r\n";
+
+
+
 
 
         var aux = document.createElement("textarea");

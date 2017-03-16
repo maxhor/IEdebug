@@ -36,14 +36,14 @@
 	<p-dataTable class="datatable" [value]="qtService.rowsvalues" (onRowClick)="qtService.onRowClick($event)" selectionMode="single"
 		(onRowDblclick)="qtService.deleteItemDialogue($event)" paginator="true" [rows]="6" [responsive]="true" emptyMessage="" [style]="qtService.iteminputstyle">
 
-		<p-header hhhhhhhhhhhhhhhhhhhhqqqqqqqqqqqqqqqqqtttttttttttttttttt id="iteminput">
+		<p-header  id="iteminput">
 			<span (mouseover)="qtService.nwArtikelMsg()" (mouseleave)="qtService.CloseBtnMsg()">
-           <button type="button"  [disabled] ="qtService.disable_nwArtikel" pButton icon="fa-min" label="foto's" 
-           (click)="qtService.toggleArtikelGallery()" >
+           <button type="button"   class="bluebutton" [disabled]="qtService.disable_nwArtikel" style="float:left" 
+           (click)="qtService.toggleArtikelGallery()" >fotoos
 </button>
 
-<button type="button" [disabled]="qtService.disable_nwArtikel" pButton icon="fa-min" label="nieuw artikel" (click)="qtService.ClearNwArtikel()"
-	style="margin-left: 0em">
+<button type="button"  class="bluebutton" [disabled]="qtService.disable_nwArtikel" style="float:right" (click)="qtService.ClearNwArtikel()"
+	>nieuw artikel
 </button>
 <div>
 	<p-autoComplete [class.notcounted]="!qtService.bCounted" [suggestions]="qtService.arts" (completeMethod)="qtService.filter($event)"

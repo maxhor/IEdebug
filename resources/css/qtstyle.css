@@ -496,10 +496,12 @@ label{
     float: left;
     background-color: #27abff;
     color: #FFF;
-    min-width: 100px;
+    
     height: 28px;
     border-radius: 4px;
     border: 1px solid #168dd9;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .bluebutton:disabled{
