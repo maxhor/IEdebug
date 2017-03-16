@@ -3016,7 +3016,7 @@ export class qtService {
             }
             if (control.value.length < minlen) {
                 let msg = "de lengte van " + fieldname + " is kleiner dan de minimale " + minlen + " tekens";
-                let i=0;
+                
                 return { [msg]: true };
             }
             var check = new RegExp(format);
