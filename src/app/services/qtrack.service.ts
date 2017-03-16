@@ -3016,12 +3016,11 @@ export class qtService {
             }
             if (control.value.length < minlen) {
                 let msg = "de lengte van " + fieldname + " is kleiner dan de minimale " + minlen + " tekens";
+                let i=0;
                 return { [msg]: true };
             }
             var check = new RegExp(format);
-            // if (format.substring(0, 5) == "[0-9]") {
-            //     control.setValue(control.value.toUpperCase())
-            // }
+            
             let bError = !check.test(control.value);
             if (bError) {
                 let msg = " is ongeldig";
