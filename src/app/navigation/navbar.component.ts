@@ -20,8 +20,8 @@ import { qtService } from '../services/qtrack.service';
      <div id = "clientname" (mouseover)="qtService.showtooltip($event)" (dblclick)="qtService.toggle_tooltip()" style="cursor:auto"><span > {{qtService.user.naam_plaats}}</span> <span style="font-size: 40%;">{{qtService.dbname}} </span></div>
      </div>  
         <div class="buttonbar" >
-         <button id="clear"      type="button" [disabled] ="qtService.disable_clear"  class="btn btn-custom btn-block" (click)="qtService.clearrequest()" (mouseover)="qtService.showtooltip($event)"><span class="fa fa-remove"></span>Nieuw</button>
-        <button id="search" type="button" [disabled] ="qtService.disable_search" class="btn btn-custom btn-block" (click)="search()" (mouseover)="qtService.showtooltip($event)"><span class="fa fa-search"></span>Zoek</button>
+         <button id="clear"      type="button" [disabled] ="qtService.disable_clear"  class="btn btn-custom " (click)="qtService.clearrequest()" (mouseover)="qtService.showtooltip($event)"><span class="fa fa-remove"></span>Nieuw</button>
+        <button id="search" type="button" [disabled] ="qtService.disable_search" class="btn btn-custom " (click)="search()" (mouseover)="qtService.showtooltip($event)"><span class="fa fa-search"></span>Zoek</button>
   
        
         <button id="save" type="submit" class="btn btn-custom" (click)="qtService.savetx()" 

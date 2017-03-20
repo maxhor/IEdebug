@@ -49,6 +49,7 @@ export class qtService {
     bOffLine = false;
     bAdress = false;
     bSynchronising = false;
+    bnaleveren = false;
 
 
 
@@ -102,6 +103,7 @@ export class qtService {
     sToolTip = "";
     sNull = "";
     adresheader = "";
+    voorraad_id = "voorraadcounted";
     cursorShape = "auto";
     sErrorHeader = "";
     request = "";
@@ -122,6 +124,7 @@ export class qtService {
     sCSV = "a, b, c";
     dbname = "";
     voorraadtitle = "";
+    voorraadclass = "";
     NewArtIconColor = ""
     nwArtikel = "";
     textFile = null;
@@ -609,12 +612,7 @@ export class qtService {
     }
 
     ProcessAllArt() {
-        this.all_art = this.all_art.map((art) => {
-            if (art.omschr == " ") {
-                art.omschr = art.artikelnr
-            };
-            return art;
-        });
+
         this.createArtGallery(); //under subscribe, this=safesubscriber. Still, this works. Whatever
         this.cursorShape = "auto";
         this.disable_nwArtikel = false;
@@ -725,7 +723,7 @@ export class qtService {
             if (_url != '') {
                 var data = this.http.get(_url);
                 var data1 = data.map(res => res.json());
-                
+
                 return data1;
             }
             else {
@@ -2008,8 +2006,8 @@ export class qtService {
             for (let i = 0; i < len; i++) {
                 fd_index = this.formdef["bootstrapcolumns"][i].fielddefs.findIndex(fd => fd.tbname == "relatie" && fd.name == field);
                 if (fd_index != -1) {
-                    this.formdef["bootstrapcolumns"][i].fielddefs[fd_index].value = klant[index];
-                    this.formdef["bootstrapcolumns"][i].fielddefs[fd_index].oldvalue = klant[index];
+                    this.formdef["bootstrapcolumns"][i].fielddefs[fd_index].value = klant["values"][index];
+                    this.formdef["bootstrapcolumns"][i].fielddefs[fd_index].oldvalue = klant["values"][index];
                     i = 1000;
                 }
             }
@@ -2098,14 +2096,15 @@ export class qtService {
             this.kopForm.get("afleveradres").value;
         let relatienr = this.formdef["bootstrapcolumns"][this.relatie_idx].fielddefs[this.relatienr_idx].value;
         var ctrl;
-        let adres;
+        var adres;
+
         if (!this.bNewRelatie) {
-            let index = this.all_adres["rows"].find(row =>
+            adres = this.all_adres["rows"].find(row =>
                 row.values[1] == relatienr && row.values[2] == adreslabel);
-            if (index >= 0) {
-                adres = this.all_adres[index].values;
+            if (adres == null) {
+                return;
             }
-            else return;//if not found: just do not try to update adres in memory. Not too important 
+
 
         }
 
@@ -2127,7 +2126,7 @@ export class qtService {
                 }
             }
         }, this)
-        adres.values[0] = this.formdef["bootstrapcolumns"][this.adres_idx].fielddefs[this.rowid_adres_idx];
+        adres.values[0] = this.formdef["bootstrapcolumns"][this.adres_idx].fielddefs[this.rowid_adres_idx].value;
 
     }
 
@@ -2536,7 +2535,10 @@ export class qtService {
 
 
         this.matrixtitle = art.artikelnr;
-        this.voorraadtitle = "voorraad van " + art.artikelnr;
+
+
+
+
         this.bhidevrrdbutton = false;
         this.matrixprijs = art.verkoopprijs;
         this.rowsmatrix = _rows;
@@ -2844,10 +2846,11 @@ export class qtService {
         var vrrdtech_idx = 4;
         var _row = {};
         var _rows = [];
-
+        this.voorraadtitle = "de totale voorraad van " + this.matrixtitle + " is " + this.TotalVrrdForArtikel(this.matrixtitle);
         startindex = this.all_voorraad["rows"].findIndex(row => row.values[art_idx] == this.matrixtitle);
+        let art =
 
-        this.bCounted = this.all_art_is_counted.indexOf(this.matrixtitle) >= 0 || this.seizoen["isnalevering"] != 1;
+            this.bCounted = this.all_art_is_counted.indexOf(this.matrixtitle) >= 0 || this.seizoen["isnalevering"] != 1;
         // this.rowsvrrdmatrix= Object.assign({},this.rowsmatrix);
         this.rowsvrrdmatrix.length = 0;
         var _tthis = this;
@@ -2873,11 +2876,37 @@ export class qtService {
             }
             _rows.push(_row);
         });
-        this.voorraadtitle = "voorraad van " + this.matrixtitle;
+
+        this.voorraadtitle = "de totale voorraad van " + this.matrixtitle + " is " + this.TotalVrrdForArtikel(this.matrixtitle);
         if (!this.bCounted) {
             this.voorraadtitle = this.voorraadtitle + " (onder voorbehoud)"
         }
         this.rowsvrrdmatrix = _rows;
+        var artikel = this.findartikelbyartnr(this.matrixtitle)
+        let _seizoen = this.all_seizoen["rows"].find(row => row.values[0] == artikel.seizoen);
+        this.bnaleveren = false;
+        this.voorraad_id = "";
+        if (_seizoen != undefined) {
+            if (_seizoen.values[3]) {
+                this.bnaleveren = true;
+                if (this.all_art_is_counted.indexOf(this.matrixtitle) >= 0) {
+                    this.voorraad_id = "voorraadcounted";
+                }
+                else {
+                    this.voorraad_id = "voorraadnotcounted";
+                }
+
+            }
+            else {
+                if (_seizoen.values[0] = "Basic") {
+                    this.voorraad_id = "voorraadbasic";
+                }
+                else if (_seizoen.values[1] = "") {
+                    this.voorraad_id = "voorraadcrnt";
+                }
+            }
+
+        }
     }
 
     onRowClick(event) {
@@ -3016,11 +3045,11 @@ export class qtService {
             }
             if (control.value.length < minlen) {
                 let msg = "de lengte van " + fieldname + " is kleiner dan de minimale " + minlen + " tekens";
-                
+
                 return { [msg]: true };
             }
             var check = new RegExp(format);
-            
+
             let bError = !check.test(control.value);
             if (bError) {
                 let msg = " is ongeldig";
@@ -3223,9 +3252,11 @@ export class qtService {
                 (artikel.seizoen === this.kopForm.controls["seizoen"].value || artikel.seizoen == "Basic"))
             .map(function (artikel) {
                 //  let voorraad = _tthis.TotalVrrdForArtikel(artikel.artikelnr);
+                let omschr = artikel.omschr;
+                if (artikel.omschr == " ") omschr = artikel.artikelnr;
                 return {
                     artnr: artikel.artikelnr,
-                    omschr: artikel.omschr,
+                    omschr: omschr,
                     voorraad: null
                 }
             });

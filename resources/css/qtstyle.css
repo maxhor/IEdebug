@@ -439,26 +439,98 @@ textarea {
     qpadding-bottom:12%;
 }
 
-#voorraad .ui-dialog {
+#voorraadcounted,#voorraadnotcounted,#voorraadbasic .ui-dialog {
+    padding: 0em;
+    
+}
+
+#voorraadcounted .ui-dialog {
+   
     background-color: #98b95f;
 }
 
-#voorraad .ui-datatable-odd {
+#voorraadnotcounted .ui-dialog {
+  
+    background-color: #fa836b;
+}
+#voorraadbasic .ui-dialog {
+  
+    background-color:  #b3f0ff;
+}
+
+#voorraadbasic ui-datatable-header{
+    background: blue !important;
+}
+#voorraadbasic .ui-widget-header,#voorraadbasic .ui-dialog-buttonpane{
+     background: blue !important;
+     color:#fff !important;
+}
+
+
+#voorraadbasic .ui-widget-header{
+    border: none !important;
+}
+#voorraadcounted,#voorraadnotcounted,#voorraadbasic .ui-dialog .ui-dialog-titlebar{
+    margin:0;
+    border-width: 0px;
+    padding: 1.5em 0em 0em 0em;
+
+}
+
+#voorraadcounted,#voorraadnotcounted,#voorraadbasic .ui-dialog .ui-dialog-content{
+    padding:0px;
+    border-width: 0px;
+}
+
+#voorraadcounted,#voorraadnotcounted,#voorraadbasic .ui-dialog .ui-dialog-buttonpane{
+    margin: 0px;
+    border-width: 0px;
+}
+
+#voorraadcounted,#voorraadnotcounted,#voorraadbasic .ui-button{
+    margin: 0px !important;
+}
+
+#voorraadcounted .ui-dialog .ui-dialog-titlebar{
+background-color: #98b95f
+}
+
+#voorraadnotcounted .ui-dialog .ui-dialog-titlebar{
+background-color: #fa836b
+}
+
+
+
+#voorraadcounted {
+    background-color: #98b95f;
+}
+
+#voorraadcounted .ui-datatable-odd {
     background-color: #d1e0b8;
 }
-#voorraad .ui-datatable-even {
+#voorraadcounted .ui-datatable-even {
     background-color: #afc983;
 }
-#voorraad.notcounted .ui-dialog {
+#voorraadnotcounted {
     background-color:#fa836b;
 }
-#voorraad.notcounted .ui-datatable-odd {
+#voorraadnotcounted .ui-datatable-odd {
     background-color: #fdd6ce;
 }
 
-#voorraad.notcounted .ui-datatable-even {
+#voorraadnotcounted .ui-datatable-even {
     background-color: #fbac9d;
 }
+
+
+#voorraadbasic .ui-datatable-odd {
+    background-color: #ccf5ff;
+}
+
+#voorraadbasic .ui-datatable-even {
+    background-color: #b3f0ff;
+}
+
 
 .header{
     text-align: center;
@@ -606,6 +678,23 @@ label{
     text-align: center;
 }
 
+#artikelimages,#voorraad .ui-dialog{
+    padding: 0em;
+}
+
+#artikelimages,#voorraad .ui-dialog-content{
+    padding: 0px;
+}
+
+#artikelimages,#voorraad .ui-dialog-titlebar{
+   
+    
+    border: none;
+    padding-top:1em;
+    margin:0;
+    text-align: center;
+}
+
 .qqmydialog{
     padding:3%;
 }
@@ -663,10 +752,7 @@ label{
     background-color: #fdd6ce;
 }
 
-.ui-dialog-titlebar{
-    margin: auto;
-    background-color: green;
-}
+
 footer #error{
     background: rosybrown;
 }

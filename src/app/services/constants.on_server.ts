@@ -5,7 +5,7 @@ import {Http, Headers } from '@angular/http';
 export class ServerConstants {
   rooturl = 'http://localhost:53823/';
   loginurl = 'http://localhost:53823/';
-  is_production = true; 
+  is_production = false; 
   headers = new Headers();
   constructor() { 
     

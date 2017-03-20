@@ -6,11 +6,13 @@
 		<div class="container-fluid">
 			<div class="col-md-2" id="mastertable">
 			
-				<p-dialog width=500 id="voorraad" [visible]="qtService.bVoorraad" showEffect="fade" [closable]="false" [class.notcounted]="!qtService.bCounted">
+<p-dialog width=500  [id]="qtService.voorraad_id" [visible]="qtService.bVoorraad" showEffect="fade" [closable]="false" 
+				[class.notcounted]="!qtService.bCounted" (mouseover)="qtService.showtooltip($event)" 
+				[class.naleveren]="qtService.naleveren">
 				
 					
-					<p-dataTable [value]="qtService.rowsvrrdmatrix" [editable]="true" paginator="true" [rows]="10" [responsive]="true">
-						<p-header>	{{qtService.voorraadtitle}}</p-header>
+					<p-dataTable  [value]="qtService.rowsvrrdmatrix" [editable]="true" paginator="true" [rows]="10" [responsive]="true">
+						<p-header >	{{qtService.voorraadtitle}}</p-header>
 
 						<p-column *ngFor="let col of qtService.colsmatrix let i=index" (Edit)="qtService.test()" [field]="qtService.colsmatrix[i]"
 							[header]="qtService.colsmatrix[i]" [style]="qtService.colstyles_detail[i]"></p-column>
@@ -27,6 +29,7 @@
 </div>
 </footer>
 </p-dialog>
+
 
 
 
