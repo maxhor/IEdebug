@@ -3,6 +3,15 @@
     padding:0;
     box-sizing: border-box;
 }
+artikelgallery .col-sm-4, .col-xs-12{
+    margin:0 !important;
+    padding:0px 0px 0px 0px !important;
+}
+
+artikelgallery .ui-widget-content{
+    margin:0 !important;
+    
+}
 
 
 body {
@@ -439,89 +448,56 @@ textarea {
     qpadding-bottom:12%;
 }
 
+.ui-dialog{
+    padding: 0px !important;
+}
+
+#artgallery .ui-panel .ui-panel-content{
+    padding: 0px 0px 0px 0px;
+}
+
 #voorraadcounted,#voorraadnotcounted,#voorraadbasic .ui-dialog {
     padding: 0em;
+    border: none;
     
 }
+#voorraadcounted, #voorraadnotcounted, #voorraadbasic .ui-widget-header{
+    border: none !important;
+}
+#voorraadcounted, #voorraadnotcounted, #voorraadbasic .ui-dialog .ui-dialog-titlebar{
+    margin:0;
+    border-width: 0px;
+    padding: 1.5em 0em 0em 0em;
+}
+.ui-dialog .ui-dialog-titlebar{
+    margin:0 !important;
+    border-width: 0px !important;
+    padding: 1.5em 0em 0em 0em !important;
+}
+ .ui-dialog .ui-dialog-content{
+    padding:0px !important;
+    border-width: 0px !important;
+}
+#artikelimages 
 
-#voorraadcounted .ui-dialog {
-   
-    background-color: #98b95f;
+#voorraadcounted, #voorraadnotcounted, #voorraadbasic .ui-dialog .ui-dialog-buttonpane{
+    margin: 0px;
+    border-width: none !important;
 }
 
-#voorraadnotcounted .ui-dialog {
-  
-    background-color: #fa836b;
+#voorraadcounted, #voorraadnotcounted, #voorraadbasic .ui-button{
+    margin: 0px !important;
 }
 #voorraadbasic .ui-dialog {
   
     background-color:  #b3f0ff;
 }
-
-#voorraadbasic ui-datatable-header{
-    background: blue !important;
-}
 #voorraadbasic .ui-widget-header,#voorraadbasic .ui-dialog-buttonpane{
-     background: blue !important;
+     background: #00b8e6 !important;
+     border: none;
+     padding: 0px;
      color:#fff !important;
 }
-
-
-#voorraadbasic .ui-widget-header{
-    border: none !important;
-}
-#voorraadcounted,#voorraadnotcounted,#voorraadbasic .ui-dialog .ui-dialog-titlebar{
-    margin:0;
-    border-width: 0px;
-    padding: 1.5em 0em 0em 0em;
-
-}
-
-#voorraadcounted,#voorraadnotcounted,#voorraadbasic .ui-dialog .ui-dialog-content{
-    padding:0px;
-    border-width: 0px;
-}
-
-#voorraadcounted,#voorraadnotcounted,#voorraadbasic .ui-dialog .ui-dialog-buttonpane{
-    margin: 0px;
-    border-width: 0px;
-}
-
-#voorraadcounted,#voorraadnotcounted,#voorraadbasic .ui-button{
-    margin: 0px !important;
-}
-
-#voorraadcounted .ui-dialog .ui-dialog-titlebar{
-background-color: #98b95f
-}
-
-#voorraadnotcounted .ui-dialog .ui-dialog-titlebar{
-background-color: #fa836b
-}
-
-
-
-#voorraadcounted {
-    background-color: #98b95f;
-}
-
-#voorraadcounted .ui-datatable-odd {
-    background-color: #d1e0b8;
-}
-#voorraadcounted .ui-datatable-even {
-    background-color: #afc983;
-}
-#voorraadnotcounted {
-    background-color:#fa836b;
-}
-#voorraadnotcounted .ui-datatable-odd {
-    background-color: #fdd6ce;
-}
-
-#voorraadnotcounted .ui-datatable-even {
-    background-color: #fbac9d;
-}
-
 
 #voorraadbasic .ui-datatable-odd {
     background-color: #ccf5ff;
@@ -530,7 +506,43 @@ background-color: #fa836b
 #voorraadbasic .ui-datatable-even {
     background-color: #b3f0ff;
 }
+#voorraadcounted .ui-dialog {
+  
+    background-color:  #98b95f;
+}
+#voorraadcounted .ui-widget-header,#voorraadcounted .ui-dialog-buttonpane{
+     background: #98b95f !important;
+     border: none;
+     padding: 0px;
+     color:#fff !important;
+}
 
+#voorraadcounted .ui-datatable-odd {
+    background-color: #ccf5ff;
+}
+
+#voorraadcounted .ui-datatable-even {
+    background-color: #b3f0ff;
+}
+
+#voorraadnotcounted .ui-dialog {
+  
+    background-color:  #fa836b;
+}
+#voorraadnotcounted .ui-widget-header,#voorraadnotcounted .ui-dialog-buttonpane{
+     background: #fa836b !important;
+     border: none;
+     padding: 0px;
+     color:#fff !important;
+}
+
+#voorraadnotcounted .ui-datatable-odd {
+    background-color: #fdd6ce;
+}
+
+#voorraadnotcounted .ui-datatable-even {
+    background-color: #fbac9d;
+}
 
 .header{
     text-align: center;

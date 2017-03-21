@@ -96,7 +96,7 @@ export class qtService {
     rspointer = 0; // resultset pointer
     matrixprijs = 0;
     move_direction = 0;
-    galleryrows = 18;
+    galleryrows = 12;
     gallerypagelinks = 10;
     tttop = "";
     ttleft = "";
@@ -1768,13 +1768,13 @@ export class qtService {
         if (this.galleryclass == "col-xs-12 col-sm-3 col-md-1") {
             this.galleryclass = "col-xs-12 col-sm-4 col-md-2";
             this.gallerybutton_label = "kleine plaatjes";
-            this.galleryrows = 18;
+            this.galleryrows = 12;
             this.gallerypagelinks = 3;
         }
         else {
             this.galleryclass = "col-xs-12 col-sm-3 col-md-1";
             this.gallerybutton_label = "grote plaatjes";
-            this.galleryrows = 48;
+            this.galleryrows = 36;
             this.gallerypagelinks = 6;
         }
 
@@ -2907,6 +2907,9 @@ export class qtService {
             }
 
         }
+        else {
+            this.voorraad_id = "voorraadbasic";
+        }
     }
 
     onRowClick(event) {
@@ -3073,6 +3076,7 @@ export class qtService {
 
     showtooltip(event) {
         let id = event.currentTarget.id;
+        let bDragable = false;
         if (id == "clientname") {
             if (this.bHideToolTip) {
                 this.sToolTip = "dubbelklik  hier om tooltips in te schakelen";
@@ -3124,6 +3128,24 @@ export class qtService {
                         }
                     }
                     break;
+                case "voorraadbasic":
+                    {
+                        this.sToolTip = "dit artikel kan door de seizoenen heen geleverd worden. Voorzover er voorraad aanwezig is, kan dit artikel binnen 3 dagen worden geleverd "
+                        bDragable = true;
+                        break;
+                    }
+                case "voorraadnotcounted":
+                    {
+                        this.sToolTip = "de levering van dit artikel is onder voorbehoud."
+                        bDragable = true;
+                        break;
+                    }
+                case "voorraadcounted":
+                    {
+                        this.sToolTip = "dit artikel kan binnen 3 dagen worden geleverd";
+                        bDragable = true;
+                        break;
+                    }
 
                 default:
                     {
@@ -3152,8 +3174,15 @@ export class qtService {
 
 
         if (this.sToolTip != null) {
-            this.tttop = event.currentTarget.getBoundingClientRect().top + "px";
-            this.ttleft = event.currentTarget.getBoundingClientRect().right + "px";
+            if (!bDragable) {
+                this.tttop = event.currentTarget.getBoundingClientRect().top + "px";
+                this.ttleft = event.currentTarget.getBoundingClientRect().right + "px";
+            }
+            else {
+                this.tttop = (event.currentTarget.firstElementChild.getBoundingClientRect().top) + "px";
+                this.ttleft = event.currentTarget.firstElementChild.getBoundingClientRect().right + "px";
+            }
+
 
             this.bToolTipHide = false;
         }
@@ -3249,7 +3278,7 @@ export class qtService {
         this.sGalleryHeader = "artikelen seizoen " + this.kopForm.controls["seizoen"].value;
         this.artgallery = this.all_art
             .filter(artikel =>
-                (artikel.seizoen === this.kopForm.controls["seizoen"].value || artikel.seizoen == "Basic"))
+            ((artikel.seizoen === this.kopForm.controls["seizoen"].value || artikel.seizoen == "Basic") && artikel.artkleur.length !=0))
             .map(function (artikel) {
                 //  let voorraad = _tthis.TotalVrrdForArtikel(artikel.artikelnr);
                 let omschr = artikel.omschr;
@@ -3263,10 +3292,12 @@ export class qtService {
     }
 
     updateArtGalleryVoorraad() {
+        if (this.all_voorraad != undefined) {
+            this.artgallery.forEach(art => {
+                art.voorraad = this.TotalVrrdForArtikel(art.artnr);
+            })
+        }
 
-        this.artgallery.forEach(art => {
-            art.voorraad = this.TotalVrrdForArtikel(art.artnr);
-        })
     }
 
     find_seizoen(searchargument) {
