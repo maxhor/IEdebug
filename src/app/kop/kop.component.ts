@@ -10,7 +10,7 @@ import { qtService } from '../services/qtrack.service';
     selector: 'kop-info',
     // providers: [qtService,HTTP_PROVIDERS],
     template: ` 
- 
+
   <div id="first" style="background-color=red" [style.cursor]="qtService.cursorShape">
  
 

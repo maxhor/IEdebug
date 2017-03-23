@@ -103,7 +103,7 @@ export class qtService {
     sToolTip = "";
     sNull = "";
     adresheader = "";
-    voorraad_id = "voorraadcounted";
+    voorraad_id = "voorraadcrnt";
     cursorShape = "auto";
     sErrorHeader = "";
     request = "";
@@ -512,6 +512,7 @@ export class qtService {
                     }
                     else {
                         this.all_adres = data;
+                        let strDummy = JSON.stringify(data);
                         this.tbversion.adres = tbversion.adres;
                         window.localStorage.setItem('adres', JSON.stringify(data));
                         window.localStorage.setItem('tbversion', JSON.stringify(this.tbversion));
@@ -910,8 +911,8 @@ export class qtService {
                             if (field.format.length > 2) {
                                 validatorarray.push(Validators.pattern(field.format));
 
-                                // this.FormatCheck = this.FormatCheck.bind(this);
-                                // validatorarray.push(this.FormatCheck(field.title, field.minlen, field.format));
+                              //  this.FormatCheck = this.FormatCheck.bind(this);
+                              //  validatorarray.push(this.FormatCheck(field.title, field.minlen, field.format));
                             }
 
 
@@ -2651,32 +2652,39 @@ export class qtService {
             for (var maat in this.rowsmatrix[i]) {
 
                 if (maat != "kleur" && bOk) {
-
                     aantal = this.rowsmatrix[i][maat];
-                    if (isNaN(aantal)) {
+                    if (aantal != null) {
+                        aantal = this.rowsmatrix[i][maat];
 
-                        this.sDialogMsg = this.rowsmatrix[i][maat] + " is geen geldig getal";
+                        if (isNaN(aantal)) {
 
-                        bOk = false;
-                    }
-                    else if (aantal < 0) {
-                        this.sDialogMsg = "het aantal " + this.rowsmatrix[i][maat] + " is kleiner dan nul, niet toegestaan";
+                            this.sDialogMsg = this.rowsmatrix[i][maat] + " is geen geldig getal";
 
-                        bOk = false;
-                    }
-                    else {
-                        index = this.rowsvrrdmatrix.findIndex(vrrdart => vrrdart.kleur === kleur);
-                        if (index >= 0) {
-                            vrrdaantal = this.rowsvrrdmatrix[index][maat] * 1;
-                            if (isNaN(vrrdaantal)) {
-                                vrrdaantal = 0;
-                            }
-                            if (vrrdaantal < aantal && this.seizoen["isnalevering"] == "1") {
-                                this.sDialogMsg = "het aantal " + aantal + " is groter dan de beschikbare voorraad van " + vrrdaantal;
-                                bOk = false;
+                            bOk = false;
+                        }
+                        else if (aantal < 0) {
+                            this.sDialogMsg = "het aantal " + this.rowsmatrix[i][maat] + " is kleiner dan nul, niet toegestaan";
+
+                            bOk = false;
+                        }
+                        else {
+                            index = this.rowsvrrdmatrix.findIndex(vrrdart => vrrdart.kleur === kleur);
+                            if (index >= 0) {
+                                vrrdaantal = this.rowsvrrdmatrix[index][maat] * 1;
+                                if (isNaN(vrrdaantal)) {
+                                    vrrdaantal = 0;
+                                }
+                                if (vrrdaantal < aantal && this.seizoen["isnalevering"] == "1") {
+                                    this.sDialogMsg = "het aantal " + aantal + " is groter dan de beschikbare voorraad van " + vrrdaantal;
+                                    bOk = false;
+                                    this.rowsmatrix[i][maat] = null;
+                                }
                             }
                         }
                     }
+
+
+
                 }
                 if (!bOk) {
                     i = 1000;
@@ -2782,17 +2790,21 @@ export class qtService {
 
     set_iconcolors() {
         var artnr: string;
-        var artnr2: string;
+        var voorraadstatus: string;
         var index: number;
         var _colors = this.rowsvalues.forEach(rowsvalue => {
             artnr = rowsvalue.artikelnr;
-            index = this.formdef["bootstrapcolumns"][this.btc_idx].rows.findIndex(row => {
-                artnr2 = row["values"][this.art_idx];
+            if (rowsvalue.method == null) {
+                rowsvalue.icon_color = "green";
+            }
+            else {
+                voorraadstatus = this.getvoorraadstatus(artnr);
+                if (voorraadstatus == "voorraadcounted") rowsvalue.icon_color = "green";
+                else if (voorraadstatus == "voorraadnotcounted") rowsvalue.icon_color = "red";
+                else if (voorraadstatus == "voorraadbasic") rowsvalue.icon_color = "blue";
+                else if (voorraadstatus == "voorraadbasic") rowsvalue.icon_color = "white";
+            }
 
-                if (artnr == artnr2 && row["values"][this.not_counted_idx] == "1") return true
-            },
-                this);
-            if (index >= 0) rowsvalue.icon_color = "red";
         }, this)
     }
 
@@ -2882,34 +2894,46 @@ export class qtService {
             this.voorraadtitle = this.voorraadtitle + " (onder voorbehoud)"
         }
         this.rowsvrrdmatrix = _rows;
-        var artikel = this.findartikelbyartnr(this.matrixtitle)
+        this.voorraad_id = this.getvoorraadstatus(this.matrixtitle)
+
+    }
+
+    getvoorraadstatus(artnr) {
+        var artikel = this.findartikelbyartnr(artnr)
         let _seizoen = this.all_seizoen["rows"].find(row => row.values[0] == artikel.seizoen);
         this.bnaleveren = false;
-        this.voorraad_id = "";
+        let voorraad_status = "";
+        //let order_seizoen=this.kopForm.controls["seizoen"].value;
+
+
         if (_seizoen != undefined) {
-            if (_seizoen.values[3]) {
+            let bCurrentSeizoen = _seizoen.values[3] == "1";
+            if (bCurrentSeizoen) {
+                voorraad_status = "voorraadcrnt";
+            }
+            else if (_seizoen.values[2] == "1") {
                 this.bnaleveren = true;
-                if (this.all_art_is_counted.indexOf(this.matrixtitle) >= 0) {
-                    this.voorraad_id = "voorraadcounted";
+                if (this.all_art_is_counted.indexOf(artnr) >= 0) {
+                    voorraad_status = "voorraadcounted";
                 }
                 else {
-                    this.voorraad_id = "voorraadnotcounted";
+                    voorraad_status = "voorraadnotcounted";
                 }
 
             }
-            else {
-                if (_seizoen.values[0] = "Basic") {
-                    this.voorraad_id = "voorraadbasic";
-                }
-                else if (_seizoen.values[1] = "") {
-                    this.voorraad_id = "voorraadcrnt";
-                }
-            }
+
 
         }
         else {
-            this.voorraad_id = "voorraadbasic";
+            if (artikel.seizoen == "Basic") {
+                voorraad_status = "voorraadbasic";
+            }
+            else {
+                voorraad_status = "voorraadcrnt";
+            }
+
         }
+        return voorraad_status;
     }
 
     onRowClick(event) {
@@ -3130,19 +3154,19 @@ export class qtService {
                     break;
                 case "voorraadbasic":
                     {
-                        this.sToolTip = "dit artikel kan door de seizoenen heen geleverd worden. Voorzover er voorraad aanwezig is, kan dit artikel binnen 3 dagen worden geleverd "
+                        this.sToolTip = "dit artikel blijft ieder seizoen in de collectie. Voorzover er voorraad aanwezig is, kan dit artikel binnen 3 dagen worden geleverd "
                         bDragable = true;
                         break;
                     }
                 case "voorraadnotcounted":
                     {
-                        this.sToolTip = "de levering van dit artikel is onder voorbehoud."
+                        this.sToolTip = "de getoonde voorraad en dus levering van dit artikel is 3 dagen, maar onder voorbehoud."
                         bDragable = true;
                         break;
                     }
                 case "voorraadcounted":
                     {
-                        this.sToolTip = "dit artikel kan binnen 3 dagen worden geleverd";
+                        this.sToolTip = "voor zover voorraad aanwezig: dit artikel kan binnen 3 dagen worden geleverd";
                         bDragable = true;
                         break;
                     }
@@ -3278,7 +3302,7 @@ export class qtService {
         this.sGalleryHeader = "artikelen seizoen " + this.kopForm.controls["seizoen"].value;
         this.artgallery = this.all_art
             .filter(artikel =>
-            ((artikel.seizoen === this.kopForm.controls["seizoen"].value || artikel.seizoen == "Basic") && artikel.artkleur.length !=0))
+                ((artikel.seizoen === this.kopForm.controls["seizoen"].value || artikel.seizoen == "Basic") && artikel.artkleur.length != 0))
             .map(function (artikel) {
                 //  let voorraad = _tthis.TotalVrrdForArtikel(artikel.artikelnr);
                 let omschr = artikel.omschr;
@@ -3301,9 +3325,13 @@ export class qtService {
     }
 
     find_seizoen(searchargument) {
-        if (this.oldSeizoen == searchargument || searchargument == "") {
+        if (this.oldSeizoen == searchargument) {
             this.bSeizoenIsValid = true;
             return true;
+        }
+        if (searchargument == "") {
+            this.bSeizoenIsValid = false;
+            return false;
         }
         if (this.all_seizoen["rows"].length == 0) { return false }
         this.seizoen = {};
