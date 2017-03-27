@@ -529,6 +529,7 @@ export class qtService {
 
             this.lookup_art("artikellookup").subscribe( //context is quite unclear to me. 
                 data => {
+                    var strDummy = JSON.stringify(data);
                     if (data[0]["pair"] != undefined) {
                         if (data[0].pair[0] == "error") {
                             this.bError = true;
@@ -1006,8 +1007,8 @@ export class qtService {
     }
 
     search() {
-        if (!this.bOffLine && !this.bSynchronising) this.gettxs();
-        else this.show_formdefs_from_localstorage();
+        if ((!this.bOffLine && !this.bSynchronising) || this.user.relatienr =="0")  this.gettxs();
+        else if(this.user.relatienr !="0") this.show_formdefs_from_localstorage();
     }
 
     gettxs() {
@@ -1047,7 +1048,7 @@ export class qtService {
                 this.cursorShape = "auto";
                 if (data.Status == "Ok") {
 
-                    var strDummy = JSON.stringify(data);
+                    
                     _tthis.rowids = data.rowids.slice();//keep resultset. resultset in info{} will be lost after moving in rs
                     _tthis.rspointer = 0;
                     //this.rowsvalues = this.getdetailrows();
