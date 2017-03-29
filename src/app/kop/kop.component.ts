@@ -19,7 +19,7 @@ import { qtService } from '../services/qtrack.service';
  <div class="kop" >
 
 
- <div class="onecol " *ngFor = " let ibtc=index let btc of qtService.visible_fields"> 
+ <div class="onecol col-sm-3" *ngFor = " let ibtc=index let btc of qtService.visible_fields"> 
  
  <div *ngFor = "let ifield=index let field of btc"  > 
  
@@ -52,7 +52,7 @@ import { qtService } from '../services/qtrack.service';
   
   </div>
 
-    <div *ngIf="field.type =='dropdown'"  >
+    <div *ngIf="field.type =='dropdown'" [hidden]="qtService.bHideAfleverAdres" >
 <label htmlFor="{{field.name}}">{{field.title}}</label>
 
 

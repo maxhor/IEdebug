@@ -3,8 +3,8 @@
 
 
 	<div class="detail">
-		<div class="container-fluid">
-			<div class="col-md-2" id="mastertable">
+		<div >
+			<div  id="mastertable">
 			
 <p-dialog width=500 class="voorraad" [id]="qtService.voorraad_id" [visible]="qtService.bVoorraad" showEffect="fade" [closable]="false" 
 				[class.notcounted]="!qtService.bCounted" (mouseover)="qtService.showtooltip($event)" 
@@ -37,7 +37,7 @@
 <div>
 	
 
-	<p-dataTable class="datatable" [value]="qtService.rowsvalues" (onRowClick)="qtService.onRowClick($event)" selectionMode="single"
+	<p-dataTable class="datatable col-sm-2" [value]="qtService.rowsvalues" (onRowClick)="qtService.onRowClick($event)" selectionMode="single"
 		(onRowDblclick)="qtService.deleteItemDialogue($event)" paginator="true" [rows]="6" [responsive]="true" emptyMessage="" [style]="qtService.iteminputstyle">
 
 		<p-header  id="iteminput">
@@ -98,7 +98,7 @@ tekst 3
 
 </div>
 
-<div (blur)="qtService.test()" class="col-md-8">
+<div (blur)="qtService.test()" class="col-sm-6">
 	<!--<div class="ContentSideSections Implementation">-->
 	<p-dataTable class="datatable" [class.summary]="qtService.bSummy" (onEdit)="qtService.setmatrixrows()" [value]="qtService.rowsmatrix"
 		[editable]="!qtService.bSummy" paginator="true" [rows]="10" [responsive]="true" (click)="qtService.onEdit($event)" emptyMessage=""

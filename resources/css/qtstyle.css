@@ -3,6 +3,10 @@
     padding:0;
     box-sizing: border-box;
 }
+.galleryimage{
+    background-color: red;
+    width: 100%;
+}
 artikelgallery .col-sm-4, .col-xs-12{
     margin:0 !important;
     padding:0px 0px 0px 0px !important;
@@ -565,7 +569,7 @@ margin: 0px !important;
 }
 .onecol{
     float: left;
-    width:25%;
+    
 }
 .width6col{
     float: left;
@@ -574,6 +578,12 @@ margin: 0px !important;
 
 .notcounted{
     color:red;
+}
+
+.blurred{
+ 
+    filter: opacity(30%);
+    cursor: not-allowed !important;
 }
 
 
@@ -615,7 +625,15 @@ label{
 }
 
 .detail{
-    margin-left: 9%;
+    margin-left: 5%;
+}
+
+td.ui-editable-column {
+    text-align: center;
+}
+p-datatable.datatable {
+    margin-right: 2%;
+    margin-top: 2%;
 }
 
 .login{
@@ -866,15 +884,25 @@ li:hover {background-color: #AAA}
 }
 
 
-@media only screen and (min-width:768px) and (max-width:1024px){
+@media only screen and (min-width:768px) and (max-width:1023px){
 .onecol{margin-right:20px !important;}
 
+.col-sm-2 { 
+    width: 36.666667% !important;
+ }
 
-
-.onecol {
-    float: left;
-    width: 27% !important;
 }
+
+@media only screen and (min-width:1024px) and (max-width:1200px){
+
+.col-sm-2 { 
+    width: 27.666667% !important;
+ }
+
+}
+
+
+
 
 .contentcontainer .onecol div {
     margin-bottom: 10px;

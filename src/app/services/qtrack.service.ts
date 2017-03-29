@@ -16,6 +16,7 @@ export class qtService {
 
     cb1: HTMLElement;
     cb2: string;
+    blur: "blur(3px)";
 
     template_element: any;
     bLoggedIn = false;
@@ -25,6 +26,7 @@ export class qtService {
     bSaving = false;
     bLoading = false;
     bHidePasswordControle = false;
+    bHideAfleverAdres = false;
     bDialog_NeeJa = false;
     bDialog_JaNee = false;
     bDialog_JaNeeReverse = false;
@@ -50,6 +52,7 @@ export class qtService {
     bAdress = false;
     bSynchronising = false;
     bnaleveren = false;
+    gallerystyle = "width:100%"
 
 
 
@@ -516,11 +519,35 @@ export class qtService {
                         this.tbversion.adres = tbversion.adres;
                         window.localStorage.setItem('adres', JSON.stringify(data));
                         window.localStorage.setItem('tbversion', JSON.stringify(this.tbversion));
+                        if (this.user.role == "customer") {
+                            this.filteradresses(this.user.relatienr);
+                            if (this.dropdownlist_adres.length == 1) {
+                                this.bHideAfleverAdres = true;
+                            }
+                            else {
+                                this.bHideAfleverAdres = false;
+                                if (this.dropdownlist_adres.length == 0) {
+                                    this.dropdownlist_adres[0] = "nieuwadres"
+                                }
+                            }
+                        }
                     }
                 });
         }
         else {
             this.all_adres = JSON.parse(window.localStorage.getItem('adres'));
+            if (this.user.role == "customer") {
+                this.filteradresses(this.user.relatienr);
+                if (this.dropdownlist_adres.length == 1) {
+                    this.bHideAfleverAdres = true;
+                }
+                else {
+                    this.bHideAfleverAdres = false;
+                    if (this.dropdownlist_adres.length == 0) {
+                        this.dropdownlist_adres[0] = "nieuwadres"
+                    }
+                }
+            }
         }
 
 
@@ -912,8 +939,8 @@ export class qtService {
                             if (field.format.length > 2) {
                                 validatorarray.push(Validators.pattern(field.format));
 
-                              //  this.FormatCheck = this.FormatCheck.bind(this);
-                              //  validatorarray.push(this.FormatCheck(field.title, field.minlen, field.format));
+                                //  this.FormatCheck = this.FormatCheck.bind(this);
+                                //  validatorarray.push(this.FormatCheck(field.title, field.minlen, field.format));
                             }
 
 
@@ -1007,8 +1034,8 @@ export class qtService {
     }
 
     search() {
-        if ((!this.bOffLine && !this.bSynchronising) || this.user.relatienr =="0")  this.gettxs();
-        else if(this.user.relatienr !="0") this.show_formdefs_from_localstorage();
+        if ((!this.bOffLine && !this.bSynchronising) || this.user.relatienr == "0") this.gettxs();
+        else if (this.user.relatienr != "0") this.show_formdefs_from_localstorage();
     }
 
     gettxs() {
@@ -1048,7 +1075,7 @@ export class qtService {
                 this.cursorShape = "auto";
                 if (data.Status == "Ok") {
 
-                    
+
                     _tthis.rowids = data.rowids.slice();//keep resultset. resultset in info{} will be lost after moving in rs
                     _tthis.rspointer = 0;
                     //this.rowsvalues = this.getdetailrows();
@@ -1446,8 +1473,10 @@ export class qtService {
                 }
             }
         }
+        if (this.user.role != "customer") {
+            this.getcustomeradresses(this.kopForm.get("relatienr").value); // customers only see their own orders. So existing adressesfor customer do not change between orders
+        }
 
-        this.filteradres(this.kopForm.get("relatienr").value);
 
 
         for (var btc = 0; btc < this.visible_klantfields.length; btc++) {
@@ -1722,8 +1751,19 @@ export class qtService {
             }
             this.setdefaults();
         }
-        else {
-            this.getblank();
+
+
+        if (this.user.role == "customer") {
+            this.filteradresses(this.user.relatienr);
+            if (this.dropdownlist_adres.length == 1) {
+                this.bHideAfleverAdres = true;
+            }
+            else {
+                this.bHideAfleverAdres = false;
+                if (this.dropdownlist_adres.length == 0) {
+                    this.dropdownlist_adres[0] = "nieuwadres"
+                }
+            }
         }
 
         if (this.bSynchronising) {
@@ -2016,7 +2056,7 @@ export class qtService {
 
         }, this)
 
-        let afleveradres = this.filteradres(relatienr);
+        let afleveradres = this.getcustomeradresses(relatienr);
 
         this.kopForm.controls["afleveradres"].setValue(afleveradres);
         if (afleveradres != null) {
@@ -2208,12 +2248,19 @@ export class qtService {
         }
     }
 
-    filteradres(relatienr) {
-        this.dropdownlist_adres.length = 0;
+    getcustomeradresses(relatienr) {
         if (this.kopForm.get("relatienr").valid) {
-            this.dropdownlist_adres = this.all_adres["rows"].filter(adres => adres.values[1] == relatienr).map(adres =>
-                adres.values[2])
+            return this.filteradresses(relatienr);
         }
+    }
+
+    filteradresses(relatienr) {
+        this.dropdownlist_adres.length = 0;
+
+
+        this.dropdownlist_adres = this.all_adres["rows"].filter(adres => adres.values[1] == relatienr).map(adres =>
+            adres.values[2])
+
         return this.dropdownlist_adres[0];
     }
 
@@ -3299,27 +3346,75 @@ export class qtService {
     }
 
     createArtGallery() {
-        let _tthis = this;
-        this.sGalleryHeader = "artikelen seizoen " + this.kopForm.controls["seizoen"].value;
+
+        if (this.user.role == 'customer') {
+            this.sGalleryHeader = "";
+            this.all_seizoen["rows"].forEach(seizoen => {
+                if (seizoen.values[2] == 1) {
+                    if (this.sGalleryHeader != "") {
+                        this.sGalleryHeader = this.sGalleryHeader + ", ";
+                    }
+                    this.sGalleryHeader = this.sGalleryHeader + seizoen.values[0];
+                }
+
+                
+            });
+            this.sGalleryHeader = "nalevering voor " + this.sGalleryHeader;
+        }
+        else {
+            this.sGalleryHeader = "artikelen seizoen " + this.kopForm.controls["seizoen"].value;
+        }
+
         this.artgallery = this.all_art
             .filter(artikel =>
-                ((artikel.seizoen === this.kopForm.controls["seizoen"].value || artikel.seizoen == "Basic") && artikel.artkleur.length != 0))
+                this.artikelfilter(artikel))
             .map(function (artikel) {
                 //  let voorraad = _tthis.TotalVrrdForArtikel(artikel.artikelnr);
                 let omschr = artikel.omschr;
                 if (artikel.omschr == " ") omschr = artikel.artikelnr;
+                if (this == undefined) {
+                    let numDummy = 0;
+                }
+                let naleveren = this.all_seizoen["rows"][this.all_seizoen["rows"].findIndex(row => row.values[0] == artikel.seizoen)].values[2] == 1;
                 return {
                     artnr: artikel.artikelnr,
                     omschr: omschr,
-                    voorraad: null
+                    voorraad: null,
+                    counted: false,
+                    naleveren: naleveren,
+                    
                 }
-            });
+            }, this);
+    }
+
+    artikelfilter(artikel) {
+        if (this.all_seizoen["rows"].length == 0) { return false; }
+
+        if (this.user.role == "customer") {
+            if (this == undefined) {
+                let numDummy = 0;
+            }
+
+            var index = this.all_seizoen["rows"].findIndex(row => row.values[0] == artikel.seizoen);
+            if (index >= 0) {
+                return this.all_seizoen["rows"][index].values[2] == 1;
+            }
+            else return false;
+
+        }
+        else {
+            return ((artikel.seizoen === this.kopForm.controls["seizoen"].value || artikel.seizoen == "Basic") && artikel.artkleur.length != 0)
+        }
     }
 
     updateArtGalleryVoorraad() {
         if (this.all_voorraad != undefined) {
             this.artgallery.forEach(art => {
+                art.counted = this.all_art_is_counted.indexOf(art.artnr) >= 0;
                 art.voorraad = this.TotalVrrdForArtikel(art.artnr);
+                if(art.artnr=="Alia17"){
+                    art.dynclass="blurred";
+                }
             })
         }
 
@@ -3590,12 +3685,16 @@ type tbversion = {
     adres?: number,
     seizoen?: number,
     blank_order?: number,
-    blank_artikel?: number
+    blank_artikel?: number,
+    dynclass?: string
 }
 
 type artgallery = [{
     artnr: string,
-    voorraad?: number
+    voorraad?: number,
+    counted?: boolean,
+    naleveren?: boolean,
+    backgroundcolor?: string
 }]
 
 type adres_item = {
