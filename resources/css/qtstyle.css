@@ -27,6 +27,9 @@ body {
     font-family: 'Open Sans', sans-serif;
     
 }
+.ui-datatable .ui-datatable-header{
+    padding:0 !important;
+}
 
 .datatable .ui-datatable-even{
     background-color:  #ffffe6;
@@ -364,7 +367,7 @@ form .form-control{
     border-right:1px solid #ccc;
 }
 .buttonbar{
-    width:86%;
+    
     margin: auto;  
    
 }
@@ -374,6 +377,13 @@ form .form-control{
     margin-left:4%;
     width: 90%;
 }
+.horizontalsplit{
+    padding-bottom: 1%;
+    margin-bottom: 0%;
+    margin: auto;
+    width: 90%;
+}
+
 textarea {
     width: 95%;
     height: 127px;
@@ -631,10 +641,7 @@ label{
 td.ui-editable-column {
     text-align: center;
 }
-p-datatable.datatable {
-    margin-right: 2%;
-    margin-top: 2%;
-}
+
 
 .login{
    
@@ -834,10 +841,11 @@ footer #error{
 #clientname{
     background-color: #85ad94;
     text-align: center;
-    margin-left: -1.5%;
-    width: 80%;
-    padding: 6px;
     border-radius: 8px;
+    width: 60%;
+    margin: auto;
+    padding: .15em;
+    
 }
 
 .responsive-width {
@@ -904,9 +912,7 @@ li:hover {background-color: #AAA}
 
 
 
-.contentcontainer .onecol div {
-    margin-bottom: 10px;
-}
+
 
 
 .onecol input[type="checkbox"] {
@@ -915,7 +921,7 @@ li:hover {background-color: #AAA}
     float: left;
     position: relative;
     left: 0;
-    margin-bottom: 20px;
+    
     clear: both;
     margin-top: 0;
 }

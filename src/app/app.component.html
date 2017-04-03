@@ -1,10 +1,16 @@
-<h1>
 
 
+
+<div class="container-fluid"> 
+	<h1>
+		<login [hidden]="qtService.bLoggedIn" (LoggedIn)="LoggedIn($event)" (OfflineInit)="offLineInit($event)" (FormBuiltReady)="test()"></login>
+		</h1>
+<h1 style="width:75%;">
 	<navbar [hidden]="!qtService.bLoggedIn"></navbar>
 
-	<login [hidden]="qtService.bLoggedIn" (LoggedIn)="LoggedIn($event)" (OfflineInit)="offLineInit($event)" (FormBuiltReady)="test()"></login>
+
 </h1>
+
 <div>
 <kop-info ></kop-info>
 
@@ -64,7 +70,7 @@
 
 		<p id="errormsg">{{qtService.sErrorMsg}}</p>
 		<footer id="error">
-			<button id="error" type="button" style="margin: auto;" pButton icon="fa-min" (click)="qtService.HideErrorMessage()" label="Ok"></button>
+			<button id="error" type="button" style="margin: auto;" pButton icon="fa-min" (click)="qtService.HideErrorMessage($event)" label="Ok"></button>
 </footer>
 </p-dialog>
 </div>
@@ -76,3 +82,4 @@
 <details-info [hidden]="!qtService.bLoggedIn" #details></details-info>
 </div>
 <adres-info [hidden]="!qtService.bAdresInfo" ></adres-info>
+</div>

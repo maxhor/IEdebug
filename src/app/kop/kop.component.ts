@@ -11,15 +11,12 @@ import { qtService } from '../services/qtrack.service';
     // providers: [qtService,HTTP_PROVIDERS],
     template: ` 
 
-  <div id="first" style="background-color=red" [style.cursor]="qtService.cursorShape">
- 
-
   <form [formGroup] = "qtService.kopForm" >
- <div   class="container-fluid contentcontainer" >
- <div class="kop" >
+ <div   class="contentcontainer" >
+ <div class="horizontalsplit" >
 
 
- <div class="onecol col-sm-3" *ngFor = " let ibtc=index let btc of qtService.visible_fields"> 
+ <div class="onecol col-sm-4 col-md-3" *ngFor = " let ibtc=index let btc of qtService.visible_fields"> 
  
  <div *ngFor = "let ifield=index let field of btc"  > 
  
@@ -46,7 +43,6 @@ import { qtService } from '../services/qtrack.service';
                      >
                      
   </p-autoComplete>
-
 
   
   
@@ -86,7 +82,7 @@ import { qtService } from '../services/qtrack.service';
   </form>
   
 
- </div>
+ 
     `,
 
 

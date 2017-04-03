@@ -14,12 +14,13 @@ import { qtService } from '../services/qtrack.service';
     selector: 'navbar',
     // providers: [qtService,HTTP_PROVIDERS],
     template: `
- 
-     <div class="w3-container  w3-red" [style.cursor]="qtService.cursorShape" >
+ <div class="horizontalsplit">
+
      <div class="buttonbar">
      <div id = "clientname" (mouseover)="qtService.showtooltip($event)" (dblclick)="qtService.toggle_tooltip()" style="cursor:auto"><span > {{qtService.user.naam_plaats}}</span> <span style="font-size: 40%;">{{qtService.dbname}} </span></div>
      </div>  
         <div class="buttonbar" >
+        <div>
          <button id="clear"      type="button" [disabled] ="qtService.disable_clear"  class="btn btn-custom " (click)="qtService.clearrequest()" (mouseover)="qtService.showtooltip($event)"><span class="fa fa-remove"></span>Nieuw</button>
         <button id="search" type="button" [disabled] ="qtService.disable_search" class="btn btn-custom " (click)="search()" (mouseover)="qtService.showtooltip($event)"><span class="fa fa-search"></span>Zoek</button>
   
@@ -38,8 +39,9 @@ import { qtService } from '../services/qtrack.service';
               [disabled] ="qtService.disable_save"><span id="excel" (mouseover)="qtService.showtooltip($event)"  
               class="fa fa-floppy-o"></span> <span id="excel" (mouseover)="qtService.showtooltip($event)" >Excel2</span></button>
         </div>  
-      </div>                  
-    
+        </div>
+                
+    <div>
     `
 
 

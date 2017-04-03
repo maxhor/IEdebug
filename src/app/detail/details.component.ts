@@ -1,4 +1,5 @@
-import {Component} from '@angular/core';
+
+import { Component, ViewChild, AfterViewInit, QueryList, ElementRef } from '@angular/core';
 
 import {Observable} from 'rxjs/observable';
 import {qtService}  from '../services/qtrack.service';
@@ -16,8 +17,10 @@ import {qtService}  from '../services/qtrack.service';
 
 
 
-export class detailscomponent {
+export class detailscomponent implements AfterViewInit {
 	qtService = {};
+	@ViewChild("detailtable") detailelement: ElementRef;
+	
 
 
     
@@ -25,14 +28,11 @@ export class detailscomponent {
 		this.qtService=_qtService;
 	}
 
+ngAfterViewInit() {
+
+this.qtService["detail_element"] = this.detailelement;
 }
 
-// <p-autoComplete [class.notcounted]="!qtService.bCounted" [suggestions]="qtService.arts" (completeMethod)="qtService.filter($event)"
-// 								[minLength]="0" [dropdown]="true" (onDropdownClick)="qtService.filter('')" 
-// 								[disabled]="qtService.disable_nwArtikel" (onSelect)="qtService.art_add($event)" formControlName="nwartikel">
-// 							</p-autoComplete>
 
+}
 
-// <p-autoComplete  [suggestions]="qtService.arts" (completeMethod)="qtService.filter($event)"
-// 				       [minLength]="0" [dropdown]="true" (onDropdownClick)="qtService.filter($event)">
-//       </p-autoComplete>

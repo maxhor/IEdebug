@@ -13,9 +13,10 @@
 </p-header>
 
 <div>
-    <template let-artikel pTemplate="item">
+    <template let-artikel pTemplate="item" let-galaryindex="index">
         
-        <div  [class]="qtService.galleryclass" (click)="qtService.art_add_from_gallery(artikel.artnr)">
+        <div [id]="galaryindex" [class]="qtService.galleryclass" (click)="qtService.art_add_from_gallery(artikel)" 
+       >
 <p-panel [header]="artikel.artnr + '         '" >
     <img class="galleryimage"  [ngClass] = "artikel.dynclass" src="fotoos/{{artikel.omschr}}.jpg" alt="Image not found" onerror="this.src='../fotoos/Alia.jpg';">
 
