@@ -17,11 +17,13 @@ export class qtService {
     cb1: HTMLElement;
     cb2: string;
     blur: "blur(3px)";
+    tt;
 
     template_element: any;
     bLoggedIn = false;
     bError = false;
     bSummy = false;
+    b_vrrd_single_item = false
     bVoorraad = false;
     bSaving = false;
     bLoading = false;
@@ -38,8 +40,9 @@ export class qtService {
     bAdresInfo = false;
     bHideToolTip = false;
     bToolTipHide = true;
-    bhidevrrdbutton = false
+    bHideVoorraadButton = true;
     bVoorraadFetched: boolean;
+
     bVoorraadExists = false;
     bArtikelenFetched = false;
     bSeizoenIsValid = false;
@@ -120,12 +123,13 @@ export class qtService {
     button_ovt_label = "overzicht";
     button_voorraad_label = "voorraad";
     gallerybutton_label = "kleine plaatjes";
+    button_singlevrrd_label = "alles";
     nwartikelctrl = "";
     matrixtitle = "";
     oldSeizoen = "";// should in fact be dealt via additional attribute 'oldvalue' to 'control' But that involves change of control.reset method because oldvalue  
     form_content = "";
     sBevestigdMessage = "";
-    sCSV = "a, b, c";
+    ssCSV = "a, b, c";
     dbname = "";
     voorraadtitle = "";
     voorraadclass = "";
@@ -154,10 +158,12 @@ export class qtService {
 
 
     colsmatrix = [];
+    colsvrrdmatrix = [];
     rowsmatrix = [];
     totals = [];
     iconRowHeader = [];
     rowsvrrdmatrix = [];
+    rows_disabled_cells = [];
     NotCounted = [];
     dropdownlist_adres = [];
     dr_a = [{ label: "add", value: {} }, { label: "lala", value: {} }];
@@ -178,6 +184,7 @@ export class qtService {
 
     hidden = {};
     disable_inputfields = {};
+    cell_disabled = {};
     formdef = {};
     colnames = {};
     constants = {};
@@ -223,7 +230,7 @@ export class qtService {
         { 'color': 'blue', 'width': '17%', 'text-align': 'right' },
         { 'color': 'blue', 'width': '30%', 'text-align': 'right' }];
     colstyles_detail_editmode = [
-        { 'color': 'blue', 'width': '30%' },
+        { 'color': 'blue', 'backgroundcolor': 'yellow', 'width': '30%' },
         { 'width': '11%' },
         { 'width': '11%' },
         { 'width': '11%' },
@@ -245,6 +252,29 @@ export class qtService {
         { 'width': '5%' },
         { 'width': '7%' },
         { 'width': '9%', 'text-align': 'right' }];
+
+    colvrrdstyles = [];
+
+    colvrrdstyles_single = [
+        { 'color': 'blue', 'width': '15%' },
+        { 'width': '5%' },
+        { 'width': '5%' },
+        { 'width': '5%' },
+        { 'width': '5%' },
+        { 'width': '5%' },
+        { 'width': '5%' },
+    ]
+    colvrrdstyles_entire = [
+        { 'color': 'blue', 'width': '15%' },
+        { 'color': 'blue', 'width': '15%' },
+        { 'width': '9%' },
+        { 'width': '9%' },
+        { 'width': '9%' },
+        { 'width': '9%' },
+        { 'width': '9%' },
+        { 'width': '9%' },
+        { 'width': '15%' },
+    ];
 
     col_editable = [false, true, true, true, true, true, true];
 
@@ -385,10 +415,23 @@ export class qtService {
         }
 
         if (user.relatienr != "0") {
-            this.getusersettings(user.dbname, user.email).subscribe(data => {
-                this.user = data;
-                if (this.user.loginstatus == "Ok") {
-                    window.localStorage.setItem('user', JSON.stringify(data));
+            this.getusersettings(user.dbname, user.email).subscribe(user => {
+                this.user = user;
+                if (user.loginstatus == "Ok") {//delete relatiedata from local storage when other user logs in
+                    let b_new_user = true;
+                    let olduser = JSON.parse(window.localStorage.getItem('user'));
+                    if (olduser != null) {
+                        if (user.relatienr == olduser.relatienr) {
+                            b_new_user = false;
+
+                        }
+                    }
+                    if (b_new_user) {
+                        window.localStorage.removeItem('adres');
+                        window.localStorage.removeItem('relatie');
+                    }
+
+                    window.localStorage.setItem('user', JSON.stringify(user));
                     this.initUser_part2();
                 }
                 else {
@@ -450,6 +493,8 @@ export class qtService {
 
     initUser_part3(serverversions) {
         this.cursorShape = "wait";
+
+
         this.disable_nwArtikel = true;
         var tbversion: tbversion = {};
         if (serverversions.rows != undefined) {
@@ -522,7 +567,7 @@ export class qtService {
                         window.localStorage.setItem('adres', JSON.stringify(data));
                         window.localStorage.setItem('tbversion', JSON.stringify(this.tbversion));
                         if (this.user.role == "customer") {
-                            this.filteradresses(this.user.relatienr);
+                            this.filteradresses(this.user.relatienr);//relatienr itself is added to the order at serverside in setdataauto
                             if (this.dropdownlist_adres.length == 1) {
                                 this.bHideAfleverAdres = true;
                             }
@@ -1323,6 +1368,7 @@ export class qtService {
 
             }
 
+
         }
 
 
@@ -1559,7 +1605,8 @@ export class qtService {
 
         this.disable_save = this.SetDisableSave();
         if (event.currentTarget.id == "naam") {
-            this.cust_add(this.kopForm.get(event.currentTarget.id).value, 1);
+            let _tthis = this;
+
         }
 
 
@@ -1725,7 +1772,7 @@ export class qtService {
         this.voorraadtitle = "";
 
         this.adresheader = "";
-        this.bhidevrrdbutton = true;
+
         this.bKopChanged = false;
         this.bBevestigd = false;
         this.bDetailChanged = false;
@@ -1843,7 +1890,7 @@ export class qtService {
             var oldMaat = "";
             var _thisrow = [];
             var _rowssummy = [];
-            var _rowobject = {};
+            var _rowdata = {};
             let _cols = [];
             //_cols = ["artikel", "kleur", "adviesprijs", "prijs", "XS", "S", "M", "L", "XL", "XXL", "aantal", "bedrag"]
             this.colstyles_detail = this.colstyles_detail_viewmode;
@@ -1853,25 +1900,25 @@ export class qtService {
                     newheader = oldMaat != _artikel["artmaat"].join();
                 }
                 if (newheader) {
-                    _rowobject = new (rowdata);
-                    _rowobject["artikel"] = "Artikel";
-                    _rowobject["kleur"] = "Kleur";
-                    _rowobject["adviesprijs"] = "AdviesPrijs";
-                    _rowobject["prijs"] = "Prijs";
+                    _rowdata = new (rowdata);
+                    _rowdata["artikel"] = "Artikel";
+                    _rowdata["kleur"] = "Kleur";
+                    _rowdata["adviesprijs"] = "AdviesPrijs";
+                    _rowdata["prijs"] = "Prijs";
                     for (var j = 0; j < _artikel["artmaat"].length; j++) {
                         _attributeMirrored = "Maat_" + String.fromCharCode(65 + j)
-                        _rowobject[_attributeMirrored] = _artikel["artmaat"][j];
+                        _rowdata[_attributeMirrored] = _artikel["artmaat"][j];
                     }
-                    _rowobject["aantal"] = "Aantal";
-                    _rowobject["bedrag"] = "Bedrag";
-                    _rowssummy.push(_rowobject);
+                    _rowdata["aantal"] = "Aantal";
+                    _rowdata["bedrag"] = "Bedrag";
+                    _rowssummy.push(_rowdata);
 
                     oldMaat = _artikel["artmaat"].join();
                 }
 
                 this.getmatrixrows(_artikel);
                 for (var j = 0; j < this.rowsmatrix.length; j++) {
-                    _rowobject = new (rowdata);
+                    _rowdata = new (rowdata);
 
                     var k = 0;
                     var aantal = 0;
@@ -1884,20 +1931,20 @@ export class qtService {
                         }
                         else {
                             _attributeMirrored = attribute;
-                            _rowobject["artikel"] = _artikel["artikelnr"];
-                            _rowobject["adviesprijs"] = _artikel["adviesprijs"];
-                            _rowobject["prijs"] = _artikel["verkoopprijs"];
+                            _rowdata["artikel"] = _artikel["artikelnr"];
+                            _rowdata["adviesprijs"] = _artikel["adviesprijs"];
+                            _rowdata["prijs"] = _artikel["verkoopprijs"];
                         }
-                        _rowobject[_attributeMirrored] = this.rowsmatrix[j][attribute];
+                        _rowdata[_attributeMirrored] = this.rowsmatrix[j][attribute];
 
                     }
-                    _rowobject["aantal"] = aantal;
+                    _rowdata["aantal"] = aantal;
                     _bedrag = Math.round(aantal * _artikel["verkoopprijs"] * 100) / 100;
-                    //_rowobject["bedrag"] = _bedrag.toLocaleString(undefined, { minimumFractionDigits: 2 });
-                    _rowobject["bedrag"] = _bedrag.toFixed(2);
+                    //_rowdata["bedrag"] = _bedrag.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                    _rowdata["bedrag"] = _bedrag.toFixed(2);
 
                     if (aantal != 0) {
-                        _rowssummy.push(_rowobject);
+                        _rowssummy.push(_rowdata);
                     }
 
 
@@ -1914,7 +1961,7 @@ export class qtService {
                 _dummy.push(_rowssummy[0][coltitle]);
             }
             //_dummy=["Artikel","Kleur","Adviesprijs","Prijs","XS","S","M","L","XL","XXL","Aantal","Bedrag"];
-            _dummy = ["Artikel", "kleur", "adviesprijs", "prijs", "Maat_A", "Maat_B", "Maat_C", "Maat_D", "Maat_E", "Maat_F", "aantal", "bedrag"];
+            _dummy = ["Artikel", "Kleur", "adviesprijs", "prijs", "Maat_A", "Maat_B", "Maat_C", "Maat_D", "Maat_E", "Maat_F", "aantal", "bedrag"];
             this.colsmatrix = _cols;
             this.bSummy = true;
             this.button_ovt_label = "wijzigmodus";
@@ -1927,6 +1974,119 @@ export class qtService {
             this.bSummy = false;
 
         }
+    }
+
+    toggle_single_voorraad() {
+        if (this.b_vrrd_single_item) this.show_voorraad_entire();
+        else this.getvrrdmatrixrows();
+
+    }
+
+    show_voorraad_entire() {
+
+
+        let _rowdata: rowdata;
+        let startindex = -1;
+        let _bedrag = 0;
+        let art_idx = 0;
+        let voorraad = 0;
+        let totvoorraad = 0;
+        var newheader = false;
+        var dim1waarde_idx = 1;
+        var dim2waarde_idx = 2;
+        var vrrdecono_idx = 3;
+        var vrrdtech_idx = 4;
+        var _attributeMirrored = "";
+        var _artstam: art_stam;
+        var oldMaat = "";
+        var _thisrow = [];
+        var _rows_all_voorraad = [];
+
+        let _cols = [];
+        this.b_vrrd_single_item = false;
+
+        this.colstyles_detail = this.colstyles_detail_viewmode;
+
+
+
+        for (var i = 0; i < this.artgallery.length; i++) {
+
+
+            _artstam = this.findartikel(this.artgallery[i]);
+
+            if (i == 0) {
+
+                //*** the header is created usting the maat[x] from the first _artstam
+
+                this.colsvrrdmatrix = ["Artikelnr", "Kleur"];
+                for (var j = 0; j < _artstam["artmaat"].length; j++) {
+
+                    this.colsvrrdmatrix.push(_artstam.artmaat[j]);
+                }
+                this.colsvrrdmatrix.push("Totaal");
+                oldMaat = _artstam.artmaat.join();
+                //*** header created
+            }
+
+
+            newheader = oldMaat != _artstam.artmaat.join();
+
+            if (newheader) {// if maatvoering changes: just ad a datarow that carried the new columntitles
+                _rowdata["Artikel"] = "Artikelnr";
+                _rowdata["Kleur"] = "Kleur";
+
+                for (var j = 0; j < _artstam.artmaat.length; j++) {
+                    _rowdata[_artstam.artmaat[j]] = _artstam.artmaat[j];
+                }
+
+                oldMaat = _artstam.artmaat.join();
+            }
+
+
+
+            startindex = this.all_voorraad["rows"].findIndex(row => row.values[art_idx] == _artstam.artikelnr);
+
+            for (var j = 0; j < _artstam.artkleur.length; j++) {
+                voorraad = null;
+                totvoorraad = 0;
+                _rowdata = new (rowdata)
+
+
+                _rowdata.Artikelnr = _artstam.artikelnr;
+                _rowdata.Kleur = _artstam.artkleur[j];
+
+                for (var k = 0; k < _artstam.artmaat.length; k++) {
+                    if (startindex != -1) {
+                        voorraad = null;
+                        for (var m = startindex; m < this.all_voorraad["rows"].length; m++) {
+                            if (this.all_voorraad["rows"][m].values[art_idx] != _artstam.artikelnr) {
+                                m = this.all_voorraad["rows"].length;
+                            }
+                            else if (
+                                this.all_voorraad["rows"][m].values[dim1waarde_idx] == _artstam.artkleur[j] &&
+                                this.all_voorraad["rows"][m].values[dim2waarde_idx] == _artstam.artmaat[k]) {
+
+                                voorraad = Number(this.all_voorraad["rows"][m].values[vrrdecono_idx]);
+                                totvoorraad = totvoorraad + voorraad;
+                            }
+                        }
+                    }
+
+                    _rowdata[_artstam.artmaat[k]] = voorraad;
+                }
+                if (totvoorraad >= 0) {
+                    _rows_all_voorraad.push(_rowdata);
+                    _rowdata["Totaal"] = totvoorraad;
+                }
+
+            }
+
+        }
+
+        this.rowsvrrdmatrix = _rows_all_voorraad;
+        this.colvrrdstyles = this.colvrrdstyles_entire;
+        this.button_singlevrrd_label = "enkel";
+        this.voorraadtitle = "alle voorraad van " + this.createSeizoenReferencetext();
     }
 
 
@@ -1948,7 +2108,7 @@ export class qtService {
                 else {
                     _tthis.getvrrdmatrixrows();
                     _tthis.updateArtGalleryVoorraad();
-                    _tthis.set_disabled_cells();
+
                 }
                 this.disable_VrrdFris = false;
             });
@@ -2080,12 +2240,20 @@ export class qtService {
 
 
     populate_adrespopup(adreslabel) {
+        let relatienr;
+        if (this.user.role == "customer") {
+            relatienr = this.user.relatienr;
+            this.adresheader = adreslabel + " adres " + this.user.naam_plaats;
+        }
+        else {
+            relatienr = this.kopForm.get("relatienr").value;
+            this.adresheader = adreslabel + " adres " + this.kopForm.get("naam").value
+        }
 
-        let relatienr = this.kopForm.get("relatienr").value;
         var ctrl;
         let bFound: Boolean;
         let fd_index;
-        this.adresheader = adreslabel + " adres " + this.kopForm.get("naam").value
+
 
 
         let adres = this.all_adres["rows"].find(row => row.values[1] == relatienr && row.values[2] == adreslabel).values;
@@ -2191,19 +2359,23 @@ export class qtService {
         let f = 0;
     }
 
-    cust_addfromchange_event(lookupindex) {
-        if (this.autocomplete_list[lookupindex].length > 0) {
-            this.cust_add(this.autocomplete_list[lookupindex][0], lookupindex);
-        }
-        else {
-            this.bAdress = true;
-        }
+    // cust_addfromchange_event(lookupindex) {
+    //     if (this.autocomplete_list[lookupindex].length > 0) {
+    //         this.cust_add(this.autocomplete_list[lookupindex][0], lookupindex);
+    //     }
+    //     else {
+    //         this.bAdress = true;
+    //     }
 
-        this.disable_save = this.SetDisableSave();
+    //     this.disable_save = this.SetDisableSave();
 
-    }
+    // }
+
     cust_add(searchargument, lookupindex) {
+        let olduppername = this.kopForm.get("naam").value.toUpperCase();
         let name = searchargument;
+        let uppername = name.toUpperCase();
+        if (olduppername != uppername && olduppername.indexOf(uppername) >= 0) return;
         searchargument = searchargument.toUpperCase();
         if (lookupindex == 0) {
 
@@ -2219,7 +2391,7 @@ export class qtService {
                     row.values[4].toUpperCase() == searchargument2).map(row => row.values[1]);
             }
             else {
-                var klanten = this.all_klant["rows"].filter(row => row.values[2].toUpperCase() == searchargument).map(row => row.values[1]);
+                var klanten = this.all_klant["rows"].filter(row => row.values[2].toUpperCase().indexOf(searchargument) == 0).map(row => row.values[1]);
             }
 
             if (klanten.length == 1) {
@@ -2246,9 +2418,10 @@ export class qtService {
         this.autocomplete_list[1].length = 0;
         let relatieword = "";
         if (this.bNewRelatie) {
-            relatieword = " nieuwe klant";
+            relatieword = " nieuwe klant ";
         }
         this.adresheader = "afleveradres van " + relatieword + x.query;
+        this.clearklant(0);
 
         if (index == 0) {
             this.autocomplete_list[0] = this.all_seizoen["rows"].map(row => row.values[0]).filter(seizoen => seizoen.search(new RegExp(x.query, "i"))
@@ -2300,9 +2473,9 @@ export class qtService {
     InputfieldIsDBLClicked(field) {
         if (field.currentTarget.id == "afleveradres") {
             this.bAdresInfo = !this.bAdresInfo;
-            if (this.kopForm.get("relatienr").value == null) {
-                this.bNewRelatie = true;
-            }
+            // if (this.kopForm.get("relatienr").value == null) {
+            //     this.bNewRelatie = true;
+            // }
         }
     }
 
@@ -2337,41 +2510,55 @@ export class qtService {
     }
 
     art_addfromchange_event(x) {
-        x.target.value = this.art_add(x.target.value);
+        let _tthis = this;
+
+        setTimeout(function () { _tthis.art_add(x.target.value) }, 200);
+
     }
 
     art_add_from_gallery(art: artgallery) {
 
         if (this.voorraadmessage(art)) return;
-        this.setmatrixrows_just_one_empty(art["artnr"]);
-        this.art_add(art["artnr"]);
+
+        this.setmatrixrows_just_one_empty(art["artikelnr"]);
+        this.art_add(art["artikelnr"]);
     }
 
     art_add(artnr: string) {
 
-        let artikel = this.artgallery.find(art => art.artnr == artnr);
+        let upperartnr = artnr.toUpperCase();
+        let oldupperartnr = this.matrixtitle;
+        if (oldupperartnr != null) {
+            oldupperartnr = oldupperartnr.toUpperCase();
+            if (oldupperartnr.indexOf(upperartnr) == 0) return;
+        }
+
+
+
+        let artikel = this.artgallery.find(art => art.artikelnr.toUpperCase().search(artnr.toUpperCase()) == 0);
         if (artikel == undefined) {
-            this.bError = true;
-            this.sErrorMsg = "artikel " + artnr + " niet gevonden";
+            this.bMessage = true;
+            this.sDialogHeader = "foutieve invoer";
+            this.sDialogMsg = "artikel " + artnr + " niet gevonden";
             return "";
 
         }
         else if (artikel.dynclass == "blurred") {
-            this.bMessage = true;
-            this.sDialogMsg = "artikel " + artnr + " kan niet worden georderd";
+            this.voorraadmessage(artikel);
             return "";
         }
 
-        artikel = this.findartikelbyartnr(artnr);
+        artikel = this.findartikelbyartnr(artikel.artikelnr);
+
 
         this.getmatrixrows(artikel);
         this.getvrrdmatrixrows()
-        if (this.all_art_is_counted.indexOf(artnr) >= 0 || this.seizoen["iscurrent"] == "1") {
-            this.NewArtIconColor = this.color_counted;
-        }
-        else {
-            this.NewArtIconColor = this.color_not_counted;
-        }
+        // if (this.all_art_is_counted.indexOf(artnr) >= 0 || this.seizoen["iscurrent"] == "1") {
+        //     this.NewArtIconColor = this.color_counted;
+        // }
+        // else {
+        //     this.NewArtIconColor = this.color_not_counted;
+        // }
 
         return artikel.artikelnr;
 
@@ -2429,31 +2616,31 @@ export class qtService {
 
     }
 
-    filter(x) {
+    filter_from_artgallery(x) {
         this.art_selected = false;
         //this.arts = this.all_art.filter(this_art => this_art.artikelnr.search(new RegExp(x.query, "i")) === 0 &&
         //  (this_art.seizoen === this.kopForm.controls["seizoen"].value || this_art.seizoen == "Basic" || this.voorraadexists(this_art.artikelnr))).map(this_art => this_art.artikelnr);
         if (x.query != "") {
-            this.arts = this.all_art.filter(this_art => this_art.artikelnr.search(new RegExp(x.query, "i")) === 0 &&
-                (this_art.seizoen === this.kopForm.controls["seizoen"].value || this_art.seizoen == "Basic")).map(this_art => this_art.artikelnr);
+            this.arts = this.artgallery.filter(this_art => this_art.artikelnr.search(new RegExp(x.query, "i")) === 0).
+                map(this_art => this_art.artikelnr);
         }
         else {
-            this.arts = [];
-            var _arts = this.all_art.filter(this_art =>
-                (this_art.seizoen === this.kopForm.controls["seizoen"].value || this_art.seizoen == "Basic")).map(this_art => this_art.artikelnr);
-            setTimeout(() => {
-                this.arts = _arts;
-            }, 10);
-
-
+            this.arts = this.artgallery.map(this_art => this_art.artikelnr);
         }
 
-
-
-        // if (this.seizoen["enddate"].valueOf() < this.today.valueOf()) {
-        //     this.arts.filter(this_art => this.voorraadexists(this_art))
-        //}
     }
+
+    handle_artikel_dropdown() {
+        this.arts = [];
+
+        //mimic remote call
+        setTimeout(() => {
+            this.arts = this.artgallery.map(this_art => this_art.artikelnr);
+        }, 100)
+    }
+
+
+
 
     voorraadexists(artikelnr) {
         return this.all_voorraad["rows"].findIndex(row => row["values"][0] == artikelnr) > -1;
@@ -2574,7 +2761,7 @@ export class qtService {
         var _cols = [];
         var index = 0;
         var _row = {};
-        _cols.push("kleur");
+        _cols.push("Kleur");
         for (var i = 0; i < art.artmaat.length; i++) {
             _cols.push(art.artmaat[i]);
 
@@ -2595,7 +2782,7 @@ export class qtService {
             if (artnr == art.artikelnr) {
                 index = _rows.findIndex(_row => _row.kleur == kleur);
                 if (index == -1) {
-                    _rows.push(this.creatematrixrow(kleur, art.artmaat));
+                    _rows.push(this.creatematrixrow(kleur, art.artmaat));// add item if not present in maat/kleur in artikelstam
                     index = _rows.length - 1;
                 }
                 _rows[index][maat] = this.formdef["bootstrapcolumns"][this.btc_idx].rows[i].values[this.aantal_idx] * -1;
@@ -2603,10 +2790,11 @@ export class qtService {
         }
 
 
+
         this.matrixtitle = art.artikelnr;
         this.bVoorraadExists = false;
         if (this.bVoorraadFetched) {
-            let art_in_gallery = this.artgallery.find(artgal => artgal.artnr == art.artikelnr);
+            let art_in_gallery = this.artgallery.find(artgal => artgal.artikelnr == art.artikelnr);
             if (art_in_gallery.voorraad > 0) {
                 this.bVoorraadExists = true;
             }
@@ -2615,40 +2803,42 @@ export class qtService {
 
 
 
-        this.bhidevrrdbutton = false;
+
         this.matrixprijs = art.verkoopprijs;
         this.rowsmatrix = _rows;
 
 
         this.colsmatrix = _cols;
+
         this.button_ovt_label = "overzicht";
 
 
         this.bSummy = false;
-        this.set_disabled_cells();
+
 
     }
 
-    set_disabled_cells() {
 
-        let tablecells = this.detail_element.nativeElement.querySelectorAll(".ui-editable-column");
-        let all_cells = this.detail_element.nativeElement.querySelectorAll('.ui-cell-data');
-        all_cells.forEach(cell => {
-            cell.innerHTML = "X";
-            cell.style.backgroundColor = "red";
-        })
-
-    }
 
     creatematrixrow(kleur, maat) {
-        var _row = new (rowdata);
-        _row["kleur"] = kleur;
+        let _row = new (rowdata);
+        var _rowstyles = [];
+        _row.Kleur = kleur;
+
         for (var j = 0; j < maat.length; j++) {
             _row[maat[j]] = null;
-        }
-        return _row;
 
+
+
+
+
+        }
+        // _row.styles=_rowstyles;
+
+        return _row;
     }
+
+
 
     getDetailsMatrix(_tthis) { //go trough all datarows, make summary per item and put in object _summariser.
         //based on summariser: create the array that feeds the left datatable
@@ -2735,10 +2925,10 @@ export class qtService {
         var oldrowvalues = [];
         //this.getvrrdmatrixrows();
         for (let i = 0; i < this.rowsmatrix.length; i++) {
-            kleur = this.rowsmatrix[i].kleur;
+            kleur = this.rowsmatrix[i].Kleur;
             for (var maat in this.rowsmatrix[i]) {
 
-                if (maat != "kleur" && bOk) {
+                if (maat != "Kleur" && bOk) {
                     aantal = this.rowsmatrix[i][maat];
                     if (aantal != null) {
                         aantal = this.rowsmatrix[i][maat];
@@ -2761,8 +2951,15 @@ export class qtService {
                                 if (isNaN(vrrdaantal)) {
                                     vrrdaantal = 0;
                                 }
-                                if (vrrdaantal < aantal && this.seizoen["iscurrent"] != "1") {
-                                    this.sDialogMsg = "het aantal " + aantal + " is groter dan de beschikbare voorraad van " + vrrdaantal;
+                                let propname = artnr + kleur + maat;
+                                let index2 = this.lookup_userdata[propertyname];
+                                let oudaantal = 0;
+                                if (index2 >= 0) {
+                                    oudaantal = this.formdef["bootstrapcolumns"][this.btc_idx].rows[index2].oldvalues[this.aantal_idx];
+                                }
+
+                                if (vrrdaantal < aantal - oudaantal && aantal > 0 && this.seizoen["iscurrent"] != "1") {
+                                    this.sDialogMsg = "het aantal " + aantal + " is groter dan de beschikbare voorraad ";
                                     bOk = false;
                                     this.rowsmatrix[i][maat] = null;
                                 }
@@ -2881,16 +3078,12 @@ export class qtService {
         var index: number;
         var _colors = this.rowsvalues.forEach(rowsvalue => {
             artnr = rowsvalue.artikelnr;
-            if (rowsvalue.method == null) {
-                rowsvalue.icon_color = "green";
-            }
-            else {
-                voorraadstatus = this.getvoorraadstatus(artnr);
-                if (voorraadstatus == "voorraadcounted") rowsvalue.icon_color = "green";
-                else if (voorraadstatus == "voorraadnotcounted") rowsvalue.icon_color = "red";
-                else if (voorraadstatus == "voorraadbasic") rowsvalue.icon_color = "blue";
-                else if (voorraadstatus == "voorraadbasic") rowsvalue.icon_color = "white";
-            }
+
+            voorraadstatus = this.getvoorraadstatus(artnr);
+            if (voorraadstatus == "voorraadgreen") rowsvalue.icon_color = "green";
+            else if (voorraadstatus == "voorraadblue") rowsvalue.icon_color = "blue";
+
+
 
         }, this)
     }
@@ -2928,7 +3121,7 @@ export class qtService {
     }
 
 
-    getvrrdmatrixrows() {// creates the array that feeds the datatable to shows the voorraad     
+    getvrrdmatrixrows() {// creates the array showing the voorraad     
 
         if (this.bOffLine) {
             return;
@@ -2945,136 +3138,181 @@ export class qtService {
         var vrrdtech_idx = 4;
         var _row = {};
         var _rows = [];
-        this.voorraadtitle = "de totale voorraad van " + this.matrixtitle + " is " + this.TotalVrrdForArtikel(this.matrixtitle);
+        var _colsvrrdmatrix = [];
+
+        var _rows_disabled_cells = [];
+        this.b_vrrd_single_item = true;
+        this.button_singlevrrd_label = "alles";
+
         startindex = this.all_voorraad["rows"].findIndex(row => row.values[art_idx] == this.matrixtitle);
 
         this.bCounted = this.all_art_is_counted.indexOf(this.matrixtitle) >= 0 || this.seizoen["iscurrent"] == 1;
         // this.rowsvrrdmatrix= Object.assign({},this.rowsmatrix);
         this.rowsvrrdmatrix.length = 0;
         var _tthis = this;
-        this.rowsmatrix.forEach(row => {
+        this.rowsmatrix.forEach((row, loopcount) => {
             _row = new (rowdata);
+            let _row_disabled_cells = [" "];//array for setting backgroundcolor to red if vrrd<0. Start with empty element "" correspond with first column 'kleur'
 
             for (var attribute in row) {
-                if (attribute == "kleur") {
+                if (loopcount == 0) {
+                    _colsvrrdmatrix.push(attribute);
+                }
+                if (attribute == "Kleur") {
                     kleur = row[attribute]
                     _row[attribute] = kleur;
+                    _row_disabled_cells[attribute] = kleur;
                 }
                 else {
+
+                    let bFound = false;
                     if (startindex != -1) {
                         for (var j = startindex; j < this.all_voorraad["rows"].length; j++) {
                             if (_tthis.all_voorraad["rows"][j].values[art_idx] == _tthis.matrixtitle && _tthis.all_voorraad["rows"][j].values[dim1waarde_idx] == kleur
                                 && _tthis.all_voorraad["rows"][j].values[dim2waarde_idx] == attribute) {
+                                bFound = true;
                                 _row[attribute] = _tthis.all_voorraad["rows"][j].values[vrrdecono_idx];
+                                if ((_row[attribute] <= 0) && this.seizoen["iscurrent"] != "1") {
+                                    _row_disabled_cells.push("cell_disabled");
+
+                                }
+                                else {
+                                    _row_disabled_cells.push("");
+                                }
                                 j = 100000;
                             }
+
                         }
                     }
+                    if (!bFound) {
+                        _row[attribute] = null;
+                        if (this.seizoen["iscurrent"] != "1") _row_disabled_cells.push("cell_disabled");
+                        else _row_disabled_cells.push("");
+                    }
+
                 }
             }
             _rows.push(_row);
-        });
+            _rows_disabled_cells.push(_row_disabled_cells);
 
-        this.voorraadtitle = "de totale voorraad van " + this.matrixtitle + " is " + this.TotalVrrdForArtikel(this.matrixtitle);
-        if (!this.bCounted) {
-            this.voorraadtitle = this.voorraadtitle + " (onder voorbehoud)"
-        }
-        this.rowsvrrdmatrix = _rows;
-        this.voorraad_id = this.getvoorraadstatus(this.matrixtitle)
-
-    }
-
-    getentirevrrdmatrixrows() {// creates the array that feeds the datatable to shows the voorraad     
-
-
-        var kleur = null;
-        var voorraad = null;
-        var startindex;
-        var art_idx = 0;
-        var dim1waarde_idx = 1;
-        var dim2waarde_idx = 2;
-        var vrrdecono_idx = 3;
-        var vrrdtech_idx = 4;
-        var _row = {};
-        var _rows = [];
-        this.voorraadtitle = "de totale voorraad van " + this.matrixtitle + " is " + this.TotalVrrdForArtikel(this.matrixtitle);
-        startindex = this.all_voorraad["rows"].findIndex(row => row.values[art_idx] == this.matrixtitle);
-
-
-
-
-        this.rowsmatrix.forEach(row => {
-            _row = new (rowdata);
-
-            for (var attribute in row) {
-                if (attribute == "kleur") {
-                    kleur = row[attribute]
-                    _row[attribute] = kleur;
-                }
-                else {
-                    if (startindex != -1) {
-                        for (var j = startindex; j < this.all_voorraad["rows"].length; j++) {
-                            if (this.all_voorraad["rows"][j].values[art_idx] == this.matrixtitle && this.all_voorraad["rows"][j].values[dim1waarde_idx] == kleur
-                                && this.all_voorraad["rows"][j].values[dim2waarde_idx] == attribute) {
-                                _row[attribute] = this.all_voorraad["rows"][j].values[vrrdecono_idx];
-                                j = 100000;
-                            }
-                        }
-                    }
-                }
-            }
-            _rows.push(_row);
         }, this);
 
-        this.all_voorraad["rows"].forEach(row => {
-            row.values.forEach(value =>
-                _row)
-        })
-
         this.voorraadtitle = "de totale voorraad van " + this.matrixtitle + " is " + this.TotalVrrdForArtikel(this.matrixtitle);
+        this.bCounted = true;
         if (!this.bCounted) {
             this.voorraadtitle = this.voorraadtitle + " (onder voorbehoud)"
+            this.bCounted = false;
         }
         this.rowsvrrdmatrix = _rows;
-        this.voorraad_id = this.getvoorraadstatus(this.matrixtitle)
+        this.colsvrrdmatrix = _colsvrrdmatrix;
+        this.colvrrdstyles = this.colvrrdstyles_single;
+        this.rows_disabled_cells = _rows_disabled_cells;
+        this.voorraad_id = this.getvoorraadstatus(this.matrixtitle);
+
 
     }
+
+    // getentirevrrdmatrixrows() {// creates the array that feeds the datatable to shows the voorraad     
+
+
+    //     var kleur = null;
+    //     var voorraad = null;
+    //     var startindex;
+    //     var art_idx = 0;
+    //     var dim1waarde_idx = 1;
+    //     var dim2waarde_idx = 2;
+    //     var vrrdecono_idx = 3;
+    //     var vrrdtech_idx = 4;
+    //     var _row = {};
+    //     var _rows = [];
+    //     this.voorraadtitle = "de totale voorraad van " + this.matrixtitle + " is " + this.TotalVrrdForArtikel(this.matrixtitle);
+    //     startindex = this.all_voorraad["rows"].findIndex(row => row.values[art_idx] == this.matrixtitle);
+
+
+
+
+    //     this.rowsmatrix.forEach(row => {
+    //         _row = new (rowdata);
+
+    //         for (var attribute in row) {
+    //             if (attribute == "kleur") {
+    //                 kleur = row[attribute]
+    //                 _row[attribute] = kleur;
+    //             }
+    //             else {
+    //                 if (startindex != -1) {
+    //                     for (var j = startindex; j < this.all_voorraad["rows"].length; j++) {
+    //                         if (this.all_voorraad["rows"][j].values[art_idx] == this.matrixtitle && this.all_voorraad["rows"][j].values[dim1waarde_idx] == kleur
+    //                             && this.all_voorraad["rows"][j].values[dim2waarde_idx] == attribute) {
+    //                             _row[attribute] = this.all_voorraad["rows"][j].values[vrrdecono_idx];
+    //                             j = 100000;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         _rows.push(_row);
+    //     }, this);
+
+    //     this.all_voorraad["rows"].forEach(row => {
+    //         row.values.forEach(value =>
+    //             _row)
+    //     })
+
+    //     this.voorraadtitle = "de totale voorraad van " + this.matrixtitle + " is " + this.TotalVrrdForArtikel(this.matrixtitle);
+    //     if (!this.bCounted) {
+    //         this.voorraadtitle = this.voorraadtitle + " (onder voorbehoud)"
+    //     }
+    //     this.rowsvrrdmatrix = _rows;
+    //     this.voorraad_id = this.getvoorraadstatus(this.matrixtitle)
+
+    // }
 
     getvoorraadstatus(artnr) {
         var artikel = this.findartikelbyartnr(artnr)
         let _seizoen = this.all_seizoen["rows"].find(row => row.values[0] == artikel.seizoen);
         this.bnaleveren = false;
         let voorraad_status = "";
-        //let order_seizoen=this.kopForm.controls["seizoen"].value;
-
 
         if (_seizoen != undefined) {
-            let bCurrentSeizoen = _seizoen.values[3] == "1";
-            if (bCurrentSeizoen) {
-                voorraad_status = "voorraadcrnt";
-            }
-            else if (_seizoen.values[2] == "1") {
-                this.bnaleveren = true;
-                if (this.all_art_is_counted.indexOf(artnr) >= 0) {
-                    voorraad_status = "voorraadcounted";
-                }
-                else {
-                    voorraad_status = "voorraadnotcounted";
-                }
-
-            }
-
-
+            voorraad_status = "voorraadgreen"; //for now, its simple. Voorraadbasic we show as blue icon. All other is green. 
+            //There can be more to it. but for now: only distiction between basic and not basic.
+            //This simple distinction meand: 
+            //green is artikel current season. And also previous season, available in stock.
         }
         else {
-            if (artikel.seizoen == "Basic") {
-                voorraad_status = "voorraadbasic";
-            }
-            else {
-                voorraad_status = "voorraadcrnt";
-            }
-
+            voorraad_status = "voorraadblue"; //basic artikel
         }
+
+
+
+        // if (_seizoen != undefined) {
+        //     let bCurrentSeizoen = _seizoen.values[3] == "1";
+        //     if (bCurrentSeizoen) {
+        //         voorraad_status = "voorraadcrnt";
+        //     }
+        //     else if (_seizoen.values[2] == "1") {
+        //         this.bnaleveren = true;
+        //         if (this.all_art_is_counted.indexOf(artnr) >= 0) {
+        //             voorraad_status = "voorraadcounted";
+        //         }
+        //         else {
+        //             voorraad_status = "voorraadnotcounted";
+        //         }
+
+        //     }
+
+
+        // }
+        // else {
+        //     if (artikel.seizoen == "Basic") {
+        //         voorraad_status = "voorraadbasic";
+        //     }
+        //     else {
+        //         voorraad_status = "voorraadcrnt";
+        //     }
+
+        // }
         return voorraad_status;
     }
 
@@ -3372,12 +3610,12 @@ export class qtService {
 
     voorraadmessage(art) {
         if (art.dynclass == "blurred") {
-            this.sDialogHeader = "artikel kan niet worden geleverd"
+            this.sDialogHeader = art.artikelnr + " kan niet worden geleverd"
             if (!art.counted) {
                 this.sDialogMsg = "de eerste uitlevering van dit artikel is nog niet afgehandeld.";
             }
             else {
-                this.sDialogMsg = "artikel " + art.artnr + " is niet meer beschikbaar voor nalevering";
+                this.sDialogMsg = "van " + art.artikelnr + " is geen voorraad meer beschikbaar";
             }
             this.bMessage = true;
 
@@ -3455,25 +3693,32 @@ export class qtService {
 
     }
 
-    createArtGallery() {
+    createSeizoenReferencetext() {
+        let seizoenref = "";
+        if (this.user.role == 'customer' || this.seizoen["iscurrent"] != "1") {
 
-        if (this.user.role == 'customer') {
-            this.sGalleryHeader = "";
             this.all_seizoen["rows"].forEach(seizoen => {
                 if (seizoen.values[2] != 1) {
-                    if (this.sGalleryHeader != "") {
-                        this.sGalleryHeader = this.sGalleryHeader + ", ";
+                    if (seizoenref != "") {
+                        seizoenref = seizoenref + ", ";
                     }
-                    this.sGalleryHeader = this.sGalleryHeader + seizoen.values[0];
+                    seizoenref = seizoenref + seizoen.values[0];
                 }
 
 
             });
-            this.sGalleryHeader = "nalevering voor " + this.sGalleryHeader;
+
         }
         else {
-            this.sGalleryHeader = "artikelen seizoen " + this.kopForm.controls["seizoen"].value;
+            seizoenref = this.kopForm.controls["seizoen"].value;
         }
+        return seizoenref;
+    }
+
+    createArtGallery() {
+
+
+        this.sGalleryHeader = "artikelen seizoen " + this.createSeizoenReferencetext();
 
         this.artgallery = this.all_art
             .filter(artikel =>
@@ -3494,7 +3739,7 @@ export class qtService {
                     naleveren = true;// seizoen is basic: voorraadcount is relevant.
                 }
                 return {
-                    artnr: artikel.artikelnr,
+                    artikelnr: artikel.artikelnr,
                     seizoen: artikel.seizoen,
                     omschr: omschr,
                     voorraad: null,
@@ -3508,7 +3753,7 @@ export class qtService {
     artikelfilter(artikel) {
         if (this.all_seizoen["rows"].length == 0) { return false; }
 
-        if (this.user.role == "customer") {
+        if (this.user.role == "customer" || this.seizoen["iscurrent"] != "1") {
             if (this == undefined) {
                 let numDummy = 0;
             }
@@ -3521,36 +3766,26 @@ export class qtService {
 
         }
         else {
+
             return ((artikel.seizoen === this.kopForm.controls["seizoen"].value || artikel.seizoen == "Basic") && artikel.artkleur.length != 0)
         }
     }
 
     updateArtGalleryVoorraad() {
-        if (this.all_voorraad != undefined) {
-            this.artgallery.forEach(art => {
-                if (!(this.user.role != "customer" && art.seizoen == "Basic")) {
-                    if (art.naleveren) {
-                        art.counted = this.all_art_is_counted.indexOf(art.artnr) >= 0;
+        if (this.seizoen["iscurrent"] != "1") {
+            if (this.all_voorraad != undefined) {
+                this.artgallery.forEach(art => {
 
-                        if (!art.counted) {
-                            art.dynclass = "blurred";
-                        }
-                        else {
-                            art.voorraad = this.TotalVrrdForArtikel(art.artnr);
-                            if (art.voorraad <= 0) {
-                                art.dynclass = "blurred";
-                            }
-                        }
+                    art.counted = this.all_art_is_counted.indexOf(art.artikelnr) >= 0;
+                    if (art.counted) art.voorraad = this.TotalVrrdForArtikel(art.artikelnr);
+                    else art.voorraad = null;
+                    if (!art.counted || art.voorraad <= 0 || art.voorraad == null) art.dynclass = "blurred";
+                    if (this.user.role == "customer") art.voorraad = null; // hide voorraad voor customer
 
-                    }
+
                     //when artikel is not naleveren, voorraad is not relevant. So do nothing
-
-                }
-                else {
-                    art.voorraad = this.TotalVrrdForArtikel(art.artnr); //never blur agent and admin for ordering 'basics' 
-                }
-
-            }, this)
+                }, this)
+            }
         }
 
     }
@@ -3581,6 +3816,8 @@ export class qtService {
             this.createArtGallery();
             this.updateArtGalleryVoorraad();
             this.kopForm.get("leveringtext").setValue(this.seizoen["leveringtext"]);
+            if (this.user.role != "customer" && this.seizoen["iscurrent"] != "1") this.bHideVoorraadButton = false;
+            else this.bHideVoorraadButton = true;
 
 
 
@@ -3647,7 +3884,7 @@ export class qtService {
             this.sErrorMsg = "order is leeg, Excel kan niet worden gemaakt";
             return;
         };
-        let sCSV = "";
+        let ssCSV = "";
         let fieldvalue = "";
         let btcdetail = -1;
         let field_countmax = -1;
@@ -3682,96 +3919,131 @@ export class qtService {
 
         }
 
-        sCSV = " Order voor\t" + naam + "\t\t" + "Order_" + this.formdef["bootstrapcolumns"][this.order_idx].fielddefs[this.ordernr_idx].value + "_" +
+        ssCSV = " Order voor\t" + naam + "\t\t" + "Order_" + this.formdef["bootstrapcolumns"][this.order_idx].fielddefs[this.ordernr_idx].value + "_" +
             this.formdef["bootstrapcolumns"][this.relatie_idx].fielddefs[this.naam_idx].value + "_" +
             this.formdef["bootstrapcolumns"][this.order_idx].fielddefs[this.datum_idx].value + "\r\n" + "\r\n";
 
         for (let fieldcount = 0; fieldcount < field_countmax; fieldcount++) {
             for (let btccount = 0; btccount < visible_fields.length; btccount++) {
                 if (fieldcount < visible_fields[btccount].length) {
-                    sCSV = sCSV + visible_fields[btccount][fieldcount][0] + "\t";
+                    ssCSV = ssCSV + visible_fields[btccount][fieldcount][0] + "\t";
 
                     if (visible_fields[btccount][fieldcount][1] != null) {
-                        sCSV = sCSV + visible_fields[btccount][fieldcount][1].replace("\n", "  ") + "\t";
+                        ssCSV = ssCSV + visible_fields[btccount][fieldcount][1].replace("\n", "  ") + "\t";
                     }
                     else {
-                        sCSV = sCSV + "\t";
+                        ssCSV = ssCSV + "\t";
                     }
 
 
                 }
             }
 
-            sCSV = sCSV + "\r\n";
+            ssCSV = ssCSV + "\r\n";
         }
 
-        sCSV = sCSV + "\r\n" + "\r\n";
+        ssCSV = ssCSV + "\r\n" + "\r\n";
         let sRow = "";
 
         for (let rowcount = 0; rowcount < this.rowsmatrix.length; rowcount++) {
             for (let field in this.rowsmatrix[rowcount]) {
                 if (this.rowsmatrix[rowcount][field] != null)
-                    sCSV =
-                        sCSV + this.rowsmatrix[rowcount][field] + "\t";
+                    ssCSV =
+                        ssCSV + this.rowsmatrix[rowcount][field] + "\t";
                 else {
-                    sCSV = sCSV + "\t";
+                    ssCSV = ssCSV + "\t";
                 }
                 if (rowcount == 0) {
                     column_count++
                 }
             }
-            sCSV = sCSV + "\r\n";
+            ssCSV = ssCSV + "\r\n";
             if (rowcount == 0) {
-                sCSV = sCSV + "\r\n";
+                ssCSV = ssCSV + "\r\n";
             }
         }
 
         for (let i = 0; i < column_count - 2; i++) {
-            sCSV = sCSV + "\t";
+            ssCSV = ssCSV + "\t";
         }
         for (let i = 1; i < this.totals.length; i++) {
-            sCSV = sCSV + this.totals[i] + "\t";
+            ssCSV = ssCSV + this.totals[i] + "\t";
         }
 
-        sCSV = sCSV + "\r\n" + "\r\n";
-        sCSV = sCSV + "bestandnaam" + "\t\t" + "Order_" + this.formdef["bootstrapcolumns"][this.order_idx].fielddefs[this.ordernr_idx].value + "_" +
+        ssCSV = ssCSV + "\r\n" + "\r\n";
+        ssCSV = ssCSV + "bestandnaam" + "\t\t" + "Order_" + this.formdef["bootstrapcolumns"][this.order_idx].fielddefs[this.ordernr_idx].value + "_" +
             this.formdef["bootstrapcolumns"][this.relatie_idx].fielddefs[this.naam_idx].value + "_" +
             this.formdef["bootstrapcolumns"][this.order_idx].fielddefs[this.datum_idx].value + "\r\n" + "\r\n";
 
 
-
-
-
         var aux = document.createElement("textarea");
-        aux.setAttribute("id", "txtscsv");
-        aux.value = sCSV;
+        aux.setAttribute("id", "txtsscsv");
+        aux.value = ssCSV;
         document.body.appendChild(aux);
-
         aux.select();
         document.execCommand("copy");
         document.body.removeChild(aux);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        var CsvFile = "data:text/csv;base64," + window.btoa(sCSV);
-        window.open(CsvFile, '_blank')
+        var sCsvFile = "data:text/scsv;base64," + window.btoa(ssCSV);
+        window.open(sCsvFile, '_blank')
         var i = 1;
     }
 
+    ExcelVoorraad() {
+
+        let sCSV = this.voorraadtitle + "\r\n";
+        sCSV = sCSV + new Date().toLocaleString() + " uur" + "\r\n" + "\r\n";
+        for (let i = 0; i < this.colsvrrdmatrix.length; i++) {
+            sCSV = sCSV + this.colsvrrdmatrix[i] + "\t";
+        }
+        sCSV = sCSV + "\r\n";
+        let previousartikelnr = this.rowsvrrdmatrix[0].Artikelnr;;
+
+
+        for (let i = 0; i < this.rowsvrrdmatrix.length; i++) {
+            if (this.rowsvrrdmatrix[i].Artikelnr != previousartikelnr) {
+                previousartikelnr = this.rowsvrrdmatrix[i].Artikelnr;
+                sCSV = sCSV + "\r\n";
+            }
+            for (let j = 0; j < this.colsvrrdmatrix.length; j++) {
+                if (this.rowsvrrdmatrix[i][this.colsvrrdmatrix[j]] != null) {
+                    sCSV = sCSV + this.rowsvrrdmatrix[i][this.colsvrrdmatrix[j]];
+                }
+                sCSV = sCSV + "\t";
+
+            }
+            sCSV = sCSV + "\r\n";
+        }
+        sCSV = sCSV + "\r\n";
+
+        var aux = document.createElement("textarea");
+        aux.setAttribute("id", "txtsscsv");
+        aux.value = sCSV;
+        document.body.appendChild(aux);
+        aux.select();
+        document.execCommand("copy");
+        document.body.removeChild(aux);
+        var sCsvFile = "data:text/scsv;base64," + window.btoa(sCSV);
+        window.open(sCsvFile, '_blank')
+
+
+    }
 }
 
-class rowdata { };
+
+
+class rowdata {
+    Artikelnr?: string;
+    Kleur: string;
+
+    //  styles: cellstyle[];
+};
+
+class cellstyle {
+
+    color?: string;
+    backgroundcolor?: string;
+    width: string;
+}
 
 class pair {
     btcindex: number;
@@ -3826,8 +4098,18 @@ type tbversion = {
 
 }
 
+type art_stam = {
+    artikelnr: string,
+    omschr?: string,
+    seizoen?: string,
+    adviesprijs?: number,
+    verkoopprijs?: number,
+    artkleur?: string[],
+    artmaat?: string[]
+}
+
 type artgallery = [{
-    artnr: string,
+    artikelnr: string,
     seizoen?: string,
     voorraad?: number,
     counted?: boolean,
@@ -3835,6 +4117,8 @@ type artgallery = [{
     backgroundcolor?: string,
     dynclass?: string
 }]
+
+
 
 type adres_item = {
     label: string,

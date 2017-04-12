@@ -10,6 +10,7 @@ import { qtService } from '../services/qtrack.service';
     selector: 'kop-info',
     // providers: [qtService,HTTP_PROVIDERS],
     template: ` 
+  
 
   <form [formGroup] = "qtService.kopForm" >
  <div   class="contentcontainer" >
@@ -36,7 +37,7 @@ import { qtService } from '../services/qtrack.service';
    
   <p-autoComplete   [suggestions]="qtService.autocomplete_list[field.lbcount]" (completeMethod)="qtService.filtercustomer(field.lbcount,$event)" 
                    [minLength]="1"   (dblclick)="qtService.InputfieldIsDBLClicked($event)" (mouseover)="qtService.showtooltip($event)" 
-                   (mouseleave)="qtService.hidetooltip()" (onblur)="qtService.dummy(field.name)"
+                   (mouseleave)="qtService.hidetooltip()" 
                     [formControlName]="field.name"   id="{{field.name}}"  (change) ="qtService.Changed($event)"
                      (onSelect)="qtService.cust_add($event,field.lbcount)"  
 

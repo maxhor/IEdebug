@@ -1,0 +1,27 @@
+<div #detailtable>
+	<!--<div class="ContentSideSections Implementation">-->
+	<p-dataTable #detailtable class="datatable col-sm-6" [class.summary]="qtService.bSummy" (onEdit)="qtService.setmatrixrows()"
+		[value]="qtService.rowsmatrix" [editable]="!qtService.bSummy" paginator="true" [rows]="10" [responsive]="true" (click)="qtService.onEdit($event)"
+		emptyMessage="" (onEditInit)="qtService.startCellEdit($event)" (wheel)="qtService.addOne($event)">
+		<p-header>{{qtService.matrixtitle}}</p-header>
+
+		<p-column *ngFor="let col of qtService.colsmatrix let i=index" [field]="qtService.colsmatrix[i]" [class.dtcolm]="qtService.bLoggedIn"
+			[header]="qtService.colsmatrix[i]" [editable]="qtService.col_editable[i]" (mouseover)="qtService.tooltipvoorraad(this)" 
+			[style]="qtService.colstyles_detail[i]">
+			 <ng-template  let-row="rowData" pTemplate="body">
+		<span [style.background-color]="row.styles[i].backgroundcolor">{{row[col]}}"2222"</span>
+    </ng-template>
+		</p-column>
+
+
+
+		<p-footer>
+			<div class="ui-helper-clearfix" style="width:100%">
+<button type="button" class="bluebutton" [disabled]="qtService.bDetailEmpty" style="float:left" (click)="qtService.toggle_editmode()" ><span id="overzicht" (mouseover)="qtService.showtooltip($event)">{{qtService.button_ovt_label}}</span></button>
+<button type="button" class="bluebutton" [disabled]="!qtService.bVoorraadExists" style="float:right" (click)="qtService.toggle_showvoorraad()" ><span id="overzicht" (mouseover)="qtService.showtooltip($event)">{{qtService.button_voorraad_label}}</span></button>
+
+</div>
+</p-footer>
+<h1>tekst12</h1>
+</p-dataTable>
+</div>

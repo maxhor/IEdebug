@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 //import {LocalStorageService,LOCAL_STORAGE_SERVICE_CONFIG} from 'angular-2-local-storage';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/debounceTime';
@@ -34,7 +35,7 @@ import { artikelgallery } from './detail/artikelgallery.component';
     
     AutoCompleteModule,
     DropdownModule,
-    
+    BrowserAnimationsModule,
     DataTableModule,
     DataGridModule,
     PanelModule,

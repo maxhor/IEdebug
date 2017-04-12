@@ -482,7 +482,11 @@ textarea {
     padding: 0px ;    
 }
 
-.voorraadcounted .ui-widget-header,.ui-dialog-titlebar{
+.voorraad .ui-dialog .ui-dialog-buttonpane button{
+    float: none;
+}
+
+.voorraadgreen .ui-widget-header,.ui-dialog-titlebar{
      
      border: none;
      padding: 0px;
@@ -502,75 +506,88 @@ padding: 0px 0px 0px 0px;
 .voorraad .ui-button{
 margin: 0px !important;
 }
-/*#voorraadbasic .ui-button{
+/*#voorraadblue .ui-button{
 margin: 0px !important;
 }
-#voorraadcounted .ui-button{
+#voorraadgreen .ui-button{
 margin: 0px !important;
 }
-#voorraadnotcounted .ui-button{
+#voorraadnotgreen .ui-button{
 margin: 0px !important;
 }*/
 
 
-#voorraadbasic .ui-dialog .ui-dialog-buttonpane{
+#voorraadblue .ui-dialog .ui-dialog-buttonpane{
     background-color:  #cccccc !important;
 }
 
-#voorraadbasic .ui-dialog .ui-dialog-titlebar{
+#voorraadblue .ui-dialog .ui-dialog-titlebar{
     background-color:  #cccccc !important;
 }
 
 
+.cell_disabled{
+       background-color: red;
+ 
+    width: 100%;
+    float: left;
+    
+    left: -10px;
+    height: 20px;
+    line-height: 20px;
+    top: -4px;
+    bottom: -4px;
+    color:white;
+    cursor: not-allowed;
+}
 
 
 
-
-#voorraadbasic .ui-dialog {
+#voorraadblue .ui-dialog {
   
     background-color:  #99ffff;
 }
-#voorraadbasic .ui-widget-header,.ui-dialog-titlebar{
+#voorraadblue .ui-widget-header,.ui-dialog-titlebar{
      background: #cccccc!important;
      color:#fff !important;
 }
 
-#voorraadbasic .ui-datatable-odd {
+#voorraadblue .ui-datatable-odd {
     background-color: #ccf5ff;
 }
 
-#voorraadbasic .ui-datatable-even {
+#voorraadblue .ui-datatable-even {
     background-color: #b3f0ff;
 }
-#voorraadcounted .ui-dialog {
+#voorraadgreen .ui-dialog {
   
     background-color:  #98b95f;
 }
-#voorraadcounted .ui-widget-header,.ui-dialog-titlebar{
+#voorraadgreen .ui-widget-header,.ui-dialog-titlebar{
      background: #98b95f !important;
      
      color:#fff !important;
 }
 
-#voorraadcounted .ui-datatable-odd {
+#voorraadgreen .ui-datatable-odd {
     background-color: #d1e0b8;
 }
 
-#voorraadcounted .ui-datatable-even {
+#voorraadgreen .ui-datatable-even {
     background-color: #afc983;
 }
 
-#voorraadnotcounted .ui-dialog {
+#voorraadnotgreen .ui-dialog {
   
     background-color:  #fa836b;
 }
 
 
-#voorraadnotcounted .ui-datatable-odd {
+#voorraadnotgreen .ui-datatable-odd {
     background-color: #fdd6ce;
 }
 
-#voorraadnotcounted .ui-datatable-even {
+#voorraadnotgreen .ui-datatable-even {
     background-color: #fbac9d;
 }
 
@@ -586,7 +603,7 @@ margin: 0px !important;
     width:50%;
 }
 
-.notcounted{
+.notgreen{
     color:red;
 }
 

@@ -84,9 +84,10 @@ export class login implements OnInit {
     checkconnection(){
         var _url = this.sc.loginurl + 'api/check_connection';
         var _tthis = this;
-       
+        
          this.http.get(_url,{ headers: this.sc.headers }).
                 map(res => res.json()).subscribe(data => {
+               
                     if(data=="connected"){
                         _tthis.bConnected = true;
                     }},

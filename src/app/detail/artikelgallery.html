@@ -13,11 +13,11 @@
 </p-header>
 
 <div>
-    <template let-artikel pTemplate="item" let-galaryindex="index">
+    <ng-template let-artikel pTemplate="item" let-galaryindex="index">
         
         <div [id]="galaryindex" [class]="qtService.galleryclass" (click)="qtService.art_add_from_gallery(artikel)" 
        >
-<p-panel [header]="artikel.artnr + '         '" >
+<p-panel [header]="artikel.artikelnr + '         '" >
     <img class="galleryimage"  [ngClass] = "artikel.dynclass" src="fotoos/{{artikel.omschr}}.jpg" alt="Image not found" onerror="this.src='../fotoos/Alia.jpg';">
 
 <hr class="ui-widget-content" style="border-top:0"> {{artikel.voorraad}}
@@ -25,7 +25,7 @@
 </p-panel>
 </div>
 <!--</div>-->
-</template>
+</ng-template>
 </div>
 </p-dataGrid>
 

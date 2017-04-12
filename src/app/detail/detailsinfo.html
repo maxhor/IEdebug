@@ -1,59 +1,64 @@
 <form [formGroup]="qtService.detailForm">
 
 
+	<div class="horizontalsplit" style="margin-top:1%;">
+<div>
+	<div id="mastertable">
 
-	<div  class="horizontalsplit" style="margin-top:1%;">
-		<div>
-			<div id="mastertable">
-
-				<p-dialog width=500 class="voorraad" [id]="qtService.voorraad_id" [visible]="qtService.bVoorraad" showEffect="fade" [closable]="false"
-					[class.notcounted]="!qtService.bCounted" (mouseover)="qtService.showtooltip($event)" [class.naleveren]="qtService.naleveren">
-
-
-					<p-dataTable [value]="qtService.rowsvrrdmatrix" [editable]="true" paginator="true" [rows]="10" [responsive]="true" >
-						<p-header> {{qtService.voorraadtitle}}</p-header>
-
-						<p-column *ngFor="let col of qtService.colsmatrix let i=index" (Edit)="qtService.test()" [field]="qtService.colsmatrix[i]"
-							[header]="qtService.colsmatrix[i]" [style]="qtService.colstyles_detail[i]"></p-column>
+		<p-dialog width=500 class="voorraad" [id]="qtService.voorraad_id" [visible]="qtService.bVoorraad" showEffect="fade" [closable]="false"
+			[class.notcounted]="!qtService.bCounted" (mouseover)="qtService.showtooltip($event)" [class.naleveren]="qtService.naleveren">
 
 
+			<p-dataTable [value]="qtService.rowsvrrdmatrix" [editable]="true" paginator="true" [rows]="10" [responsive]="true">
+				<p-header> {{qtService.voorraadtitle}}</p-header>
 
-					</p-dataTable>
+				<p-column *ngFor="let col of qtService.colsvrrdmatrix let i=index" (Edit)="qtService.test()" [field]="qtService.colsvrrdmatrix[i]"
+					[header]="qtService.colsvrrdmatrix[i]" [style]="qtService.colvrrdstyles[i]"></p-column>
 
 
-					<footer>
-						<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
-							<button type="button" pButton style="float:left" pButton icon="fa-min" (click)="qtService.toggle_showvoorraad()" label="Sluit"></button>
-<button type="button" pButton style="float:right" [disabled]="qtService.disable_VrrdFris" style="margin: auto;" pButton icon="fa-min" (click)="qtService.getvoorraad()" label="Fris"></button>
+
+			</p-dataTable>
+
+
+			<footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+<button type="button" pButton  pButton icon="fa-min" (click)="qtService.toggle_showvoorraad()" label="Sluit"></button>
+<button type="button" style="margin-left: 11% !important" pButton  pButton icon="fa-min" (click)="qtService.toggle_single_voorraad()" [label]="qtService.button_singlevrrd_label"></button>
+<button type="button" style="margin-left: 11% !important" pButton  pButton icon="fa-min" (click)="qtService.ExcelVoorraad()" label="Excel"></button>
+
+
+
+<button type="button" style="float: right" pButton  [disabled]="qtService.disable_VrrdFris" pButton icon="fa-min" (click)="qtService.getvoorraad()" label="Fris"></button>
 </div>
 </footer>
 </p-dialog>
 
 
-	<p-dataTable class="datatable col-sm-2" [value]="qtService.rowsvalues" (onRowClick)="qtService.onRowClick($event)" selectionMode="single"
-		(onRowDblclick)="qtService.deleteItemDialogue($event)" paginator="true" [rows]="6" [responsive]="true" emptyMessage="" [style]="qtService.iteminputstyle">
+<p-dataTable class="datatable col-sm-2" [value]="qtService.rowsvalues" (onRowClick)="qtService.onRowClick($event)" selectionMode="single"
+	(onRowDblclick)="qtService.deleteItemDialogue($event)" paginator="true" [rows]="6" [responsive]="true" emptyMessage="" [style]="qtService.iteminputstyle">
 
-		<p-header id="iteminput">
-			<span (mouseover)="qtService.nwArtikelMsg()" (mouseleave)="qtService.CloseBtnMsg()">
+	<p-header id="iteminput">
+		<span (mouseover)="qtService.nwArtikelMsg()" (mouseleave)="qtService.CloseBtnMsg()">
            <button type="button"   class="bluebutton" [disabled]="qtService.disable_nwArtikel" style="float:left" (click)="qtService.toggleArtikelGallery()" >fotoos
-        </button>
-        <button type="button" class="bluebutton" [disabled]="qtService.disable_nwArtikel" style="float:right" (click)="qtService.ClearNwArtikel()" >nieuw artikel
-        </button>
+</button>
+<button type="button" class="bluebutton" [disabled]="qtService.disable_nwArtikel" style="float:right" (click)="qtService.ClearNwArtikel()" >nieuw artikel
+</button>
 <div>
-	<p-autoComplete [class.notcounted]="!qtService.bCounted" [suggestions]="qtService.arts" (completeMethod)="qtService.filter($event)"
-		[minLength]="0" [dropdown]="true" (onDropdownClick)="qtService.filter($event)" placeholder="type hier volgend artikel" (onSelect)="qtService.art_add($event)"
-		formControlName="nwartikel" (mouseover)="qtService.showtooltip($event)" id="nieuwartikel" (mouseleave)="qtService.hidetooltip(qqw)">
+	<p-autoComplete [class.notcounted]="!qtService.bCounted" [suggestions]="qtService.arts" (completeMethod)="qtService.filter_from_artgallery($event)"
+		[minLength]="0" [dropdown]="true" (onDropdownClick)="qtService.handle_artikel_dropdown($event)" placeholder="type hier volgend artikel" (onSelect)="qtService.art_add($event)"
+		formControlName="nwartikel" (mouseover)="qtService.showtooltip($event)" id="nieuwartikel" (mouseleave)="qtService.hidetooltip(qqw)"
+		(change)="qtService.art_addfromchange_event($event)">
 	</p-autoComplete>
 </div>
 </span>
 </p-header>
 <p-column>
-	<template pTemplate type="header">
+	<ng-template pTemplate type="header">
 
-	</template>
-	<template let-artdata="rowData" let-index="rowIndex" pTemplate type="body">
+	</ng-template>
+	<ng-template let-artdata="rowData" let-index="rowIndex" pTemplate type="body">
 		<span [style.color]="artdata.icon_color" class="{{qtService.iconRowHeader[index]}}"></span>
-	</template>
+	</ng-template>
 </p-column>
 
 
@@ -64,33 +69,36 @@ tekst 3
 <!--<footer><div class="ui-helper-clearfix" style="width:100%"></div></footer>-->
 
 </p-dataTable>
-</div >
+</div>
 
-<div #detailtable>
+<div (blur)="qtService.test()" class="col-md-7">
 	<!--<div class="ContentSideSections Implementation">-->
-	<p-dataTable #detailtable  class="datatable col-sm-6" [class.summary]="qtService.bSummy" (onEdit)="qtService.setmatrixrows()" [value]="qtService.rowsmatrix"
+	<p-dataTable class="datatable" [class.summary]="qtService.bSummy" (onEdit)="qtService.setmatrixrows()" [value]="qtService.rowsmatrix"
 		[editable]="!qtService.bSummy" paginator="true" [rows]="10" [responsive]="true" (click)="qtService.onEdit($event)" emptyMessage=""
-		(onEditInit)="qtService.startCellEdit($event)" (wheel)="qtService.addOne($event)" >
-		<p-header>{{qtService.matrixtitle}}</p-header>
+		(onEditInit)="qtService.startCellEdit($event)" (wheel)="qtService.addOne($event)">
+		<p-header>{{qtService.matrixtitle}}{{qtService.tt}}</p-header>
 
 		<p-column *ngFor="let col of qtService.colsmatrix let i=index" [field]="qtService.colsmatrix[i]" [class.dtcolm]="qtService.bLoggedIn"
 			[header]="qtService.colsmatrix[i]" [editable]="qtService.col_editable[i]" (mouseover)="qtService.tooltipvoorraad(this)"
 			[style]="qtService.colstyles_detail[i]">
-			</p-column>
+			<ng-template let-row="rowData" let-ri="rowIndex" pTemplate="body">
+				<span [class]="qtService.rows_disabled_cells[ri][i]">{{row[col]}}</span>
+			</ng-template>
+		</p-column>
 
 
 
 		<p-footer>
 			<div class="ui-helper-clearfix" style="width:100%">
 <button type="button" class="bluebutton" [disabled]="qtService.bDetailEmpty" style="float:left" (click)="qtService.toggle_editmode()" ><span id="overzicht" (mouseover)="qtService.showtooltip($event)">{{qtService.button_ovt_label}}</span></button>
-<button type="button" class="bluebutton" [disabled]="!qtService.bVoorraadExists" style="float:right" (click)="qtService.toggle_showvoorraad()" ><span id="overzicht" (mouseover)="qtService.showtooltip($event)" >{{qtService.button_voorraad_label}}</span></button>
-
+<span [hidden]="qtService.bHideVoorraadButton"><button type="button" [disabled]="!qtService.bVoorraadFetched" pButton style="float:right" (click)="qtService.toggle_showvoorraad()" [label]="qtService.button_voorraad_label" ></button>
+</span>
 </div>
 </p-footer>
 <h1>tekst12</h1>
 </p-dataTable>
-</div>
 
+</div>
 
 </div>
 
