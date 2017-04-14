@@ -17,7 +17,18 @@ import { qtService } from '../services/qtrack.service';
  <div class="horizontalsplit">
 
      <div class="buttonbar">
-     <div id = "clientname" (mouseover)="qtService.showtooltip($event)" (dblclick)="qtService.toggle_tooltip()" style="cursor:auto"><span > {{qtService.user.naam_plaats}}</span> <span style="font-size: 40%;">{{qtService.dbname}} </span></div>
+     <div 
+     id = "clientname" (mouseover)="qtService.showtooltip($event)" (dblclick)="qtService.toggle_tooltip()" style="cursor:auto">
+     <span> {{qtService.user.naam_plaats}}</span> <span style="font-size: 40%;">{{qtService.dbname}} </span>
+     <div class="dropdown">
+     <span id="help" class="dropbtn">help</span>
+     <div class="dropdown-content">
+    <p (click)="qtService.help('algemeen')">Link 1</p>
+    <p (click)="qtService.help('tooltiptoggle')">Link 2</p>
+    <p href="#">Link 3</p>
+  </div>
+  </div>
+  </div>
      </div>  
         <div class="buttonbar" >
         <div>
@@ -30,14 +41,14 @@ import { qtService } from '../services/qtrack.service';
               class="fa fa-floppy-o"></span> <span (mouseover)="qtService.SaveBtnMsg()" (mouseleave)="qtService.CloseBtnMsg()">Bewaar</span></button>
     
       
-        <button id="first" type="button" class="btn btn-custom" (click)="move(0)" (mouseover)="qtService.showtooltip($event)"  [disabled] ="qtService.disable_moveFirst">   <span class="fa fa-fast-backward"></span>Begin</button>
-        <button id="previous" type="button" class="btn btn-custom" (click)="move(-1)" (mouseover)="qtService.showtooltip($event)" [disabled] ="qtService.disable_movePrevious">  <span class="fa fa-step-backward"></span>Vorig</button>
-        <button id="next" type="button" class="btn btn-custom" (click)="move(1)" (mouseover)="qtService.showtooltip($event)" [disabled] ="qtService.disable_moveNext">   <span class="fa fa-step-forward"></span>Volgend</button>
+        <button id="first" type="button" class="btn btn-custom" (click)="move(0)" (mouseover)="qtService.showtooltip($event)"  [disabled] ="qtService.disable_moveFirst">   <span class="fa fa-fast-backward"></span>Eerste</button>
+        <button id="previous" type="button" class="btn btn-custom" (click)="move(-1)" (mouseover)="qtService.showtooltip($event)" [disabled] ="qtService.disable_movePrevious">  <span class="fa fa-step-backward"></span>Vorige</button>
+        <button id="next" type="button" class="btn btn-custom" (click)="move(1)" (mouseover)="qtService.showtooltip($event)" [disabled] ="qtService.disable_moveNext">   <span class="fa fa-step-forward"></span>Volgende</button>
         <button id="last" type="button" class="btn btn-custom" (click)="move(9999)" (mouseover)="qtService.showtooltip($event)" [disabled] ="qtService.disable_moveEnd"><span class="fa fa-fast-forward"></span>Laatste</button>
        
-       <button  type="submit" class="btn btn-custom" (click)="qtService.Excel()" [disabled] ="!qtService.bSummy"
-              [disabled] ="qtService.disable_save"><span id="excel" (mouseover)="qtService.showtooltip($event)"  
-              class="fa fa-floppy-o"></span> <span id="excel" (mouseover)="qtService.showtooltip($event)" >Excel2</span></button>
+       <button  type="submit" class="btn btn-custom" (click)="qtService.Excel()" [disabled] ="!qtService.bSummy">
+              <span id="excel" (mouseover)="qtService.showtooltip($event)"  
+              class="fa fa-floppy-o"></span> <span id="excel" (mouseover)="qtService.showtooltip($event)" >Excel</span></button>
         </div>  
         </div>
                 

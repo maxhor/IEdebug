@@ -39,7 +39,7 @@
 
 	<p-header id="iteminput">
 		<span (mouseover)="qtService.nwArtikelMsg()" (mouseleave)="qtService.CloseBtnMsg()">
-           <button type="button"   class="bluebutton" [disabled]="qtService.disable_nwArtikel" style="float:left" (click)="qtService.toggleArtikelGallery()" >fotoos
+           <button type="button"   class="bluebutton" [disabled]="qtService.disable_nwArtikel" style="float:left" (click)="qtService.toggleArtikelGallery()" >foto's
 </button>
 <button type="button" class="bluebutton" [disabled]="qtService.disable_nwArtikel" style="float:right" (click)="qtService.ClearNwArtikel()" >nieuw artikel
 </button>
@@ -79,7 +79,7 @@ tekst 3
 		<p-header>{{qtService.matrixtitle}}{{qtService.tt}}</p-header>
 
 		<p-column *ngFor="let col of qtService.colsmatrix let i=index" [field]="qtService.colsmatrix[i]" [class.dtcolm]="qtService.bLoggedIn"
-			[header]="qtService.colsmatrix[i]" [editable]="qtService.col_editable[i]" (mouseover)="qtService.tooltipvoorraad(this)"
+			[header]="qtService.colsqtitle[i]" [editable]="qtService.col_editable[i]" (mouseover)="qtService.tooltipvoorraad(this)"
 			[style]="qtService.colstyles_detail[i]">
 			<ng-template let-row="rowData" let-ri="rowIndex" pTemplate="body">
 				<span [class]="qtService.rows_disabled_cells[ri][i]">{{row[col]}}</span>

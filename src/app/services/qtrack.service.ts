@@ -79,6 +79,7 @@ export class qtService {
 
     disable_VrrdFris = false;
 
+
     seizoen_idx = -1;
     btc_idx = -1;
     art_idx = -1;
@@ -118,6 +119,7 @@ export class qtService {
     sDialogHeader = "test";
     sGalleryHeader;
     sDialogMsg = "testest";
+    sTooltipMessage = "klik om tooltips uit te schakelen"
     formname = "order";
     formdef_id = "";
     button_ovt_label = "overzicht";
@@ -158,6 +160,7 @@ export class qtService {
 
 
     colsmatrix = [];
+    colsqtitle: string[];
     colsvrrdmatrix = [];
     rowsmatrix = [];
     totals = [];
@@ -1148,6 +1151,12 @@ export class qtService {
                         _tthis.rowsmatrix.length = 0;
                     }
                 }
+                else if (data.Status == "niets gevonden") {
+                    _tthis.rowids = [];
+                    _tthis.sDialogMsg = data.Message;
+                    _tthis.sDialogHeader = data.Status;
+                    _tthis.bMessage = true;
+                }
                 else {
                     _tthis.rowids = [];
                     _tthis.sErrorMsg = data.Message;
@@ -1884,38 +1893,41 @@ export class qtService {
 
         if (!this.bSummy) {
             let _bedrag = 0;
-            var newheader = true;
+            var newheader = false;
             var _attributeMirrored = "";
             var _artikel = {};
-            var oldMaat = "";
+
             var _thisrow = [];
             var _rowssummy = [];
             var _rowdata = {};
             let _cols = [];
+            let oldMaat;
             //_cols = ["artikel", "kleur", "adviesprijs", "prijs", "XS", "S", "M", "L", "XL", "XXL", "aantal", "bedrag"]
-            this.colstyles_detail = this.colstyles_detail_viewmode;
+
             for (var i = 0; i < this.rowsvalues.length; i++) {
                 _artikel = this.findartikel(this.rowsvalues[i]);
+
                 if (i > 0) {
                     newheader = oldMaat != _artikel["artmaat"].join();
                 }
+
                 if (newheader) {
                     _rowdata = new (rowdata);
-                    _rowdata["artikel"] = "Artikel";
-                    _rowdata["kleur"] = "Kleur";
-                    _rowdata["adviesprijs"] = "AdviesPrijs";
-                    _rowdata["prijs"] = "Prijs";
+                    _rowdata["Artikel"] = "Artikel";
+                    _rowdata["Kleur"] = "Kleur";
+                    _rowdata["Adviesprijs"] = "AdviesPrijs";
+                    _rowdata["Prijs"] = "Prijs";
                     for (var j = 0; j < _artikel["artmaat"].length; j++) {
                         _attributeMirrored = "Maat_" + String.fromCharCode(65 + j)
                         _rowdata[_attributeMirrored] = _artikel["artmaat"][j];
                     }
-                    _rowdata["aantal"] = "Aantal";
-                    _rowdata["bedrag"] = "Bedrag";
+                    _rowdata["Aantal"] = "Aantal";
+                    _rowdata["Bedrag"] = "Bedrag";
                     _rowssummy.push(_rowdata);
 
-                    oldMaat = _artikel["artmaat"].join();
-                }
 
+                }
+                oldMaat = _artikel["artmaat"].join();
                 this.getmatrixrows(_artikel);
                 for (var j = 0; j < this.rowsmatrix.length; j++) {
                     _rowdata = new (rowdata);
@@ -1924,24 +1936,24 @@ export class qtService {
                     var aantal = 0;
                     for (var attribute in this.rowsmatrix[j]) {
 
-                        if (attribute != "kleur") {
+                        if (attribute != "Kleur") {
                             _attributeMirrored = "Maat_" + String.fromCharCode(65 + k)
                             aantal = aantal + this.rowsmatrix[j][attribute];
                             k++;
                         }
                         else {
                             _attributeMirrored = attribute;
-                            _rowdata["artikel"] = _artikel["artikelnr"];
-                            _rowdata["adviesprijs"] = _artikel["adviesprijs"];
-                            _rowdata["prijs"] = _artikel["verkoopprijs"];
+                            _rowdata["Artikel"] = _artikel["artikelnr"];
+                            _rowdata["Adviesprijs"] = _artikel["adviesprijs"];
+                            _rowdata["Prijs"] = _artikel["verkoopprijs"];
                         }
                         _rowdata[_attributeMirrored] = this.rowsmatrix[j][attribute];
 
                     }
-                    _rowdata["aantal"] = aantal;
+                    _rowdata["Aantal"] = aantal;
                     _bedrag = Math.round(aantal * _artikel["verkoopprijs"] * 100) / 100;
                     //_rowdata["bedrag"] = _bedrag.toLocaleString(undefined, { minimumFractionDigits: 2 });
-                    _rowdata["bedrag"] = _bedrag.toFixed(2);
+                    _rowdata["Bedrag"] = _bedrag.toFixed(2);
 
                     if (aantal != 0) {
                         _rowssummy.push(_rowdata);
@@ -1953,19 +1965,29 @@ export class qtService {
             }
 
             this.rowsmatrix = _rowssummy;
-            //this.colsmatrix=[];
+
             _cols.length = 0;
-            let _dummy = [];
-            for (let coltitle in _rowssummy[0]) {
-                _cols.push(coltitle);
-                _dummy.push(_rowssummy[0][coltitle]);
-            }
-            //_dummy=["Artikel","Kleur","Adviesprijs","Prijs","XS","S","M","L","XL","XXL","Aantal","Bedrag"];
-            _dummy = ["Artikel", "Kleur", "adviesprijs", "prijs", "Maat_A", "Maat_B", "Maat_C", "Maat_D", "Maat_E", "Maat_F", "aantal", "bedrag"];
-            this.colsmatrix = _cols;
+
+
+
             this.bSummy = true;
+            //this.rows_disabled_cells=[];
+            this.colstyles_detail = this.colstyles_detail_viewmode;
+            this.colsqtitle = ["Artikel", "Kleur", "Adviesprijs", "Prijs"];
+            _artikel = this.findartikel(this.rowsvalues[0]);
+            this.colsqtitle = this.colsqtitle.concat(_artikel["artmaat"]).concat(["Aantal", "Bedrag"]);
+
+
+            let _dummy = ["Artikel", "Kleur", "Adviesprijs", "Prijs", "Maat_A", "Maat_B", "Maat_C", "Maat_D", "Maat_E", "Maat_F", "Aantal", "Bedrag"];
+            this.colsmatrix = _dummy;
+
+
+            let _row_disabled_cel = Array(this.colsmatrix.length);
+            _row_disabled_cel.fill("");
+            this.rows_disabled_cells = Array(_rowssummy.length);
+            this.rows_disabled_cells.fill(_row_disabled_cel)
             this.button_ovt_label = "wijzigmodus";
-            this.matrixtitle = "totaal overzicht"
+            this.matrixtitle = "totaal overzicht";
         }
         else {
             this.colstyles_detail = this.colstyles_detail_editmode;
@@ -2519,9 +2541,9 @@ export class qtService {
     art_add_from_gallery(art: artgallery) {
 
         if (this.voorraadmessage(art)) return;
-
-        this.setmatrixrows_just_one_empty(art["artikelnr"]);
         this.art_add(art["artikelnr"]);
+        this.setmatrixrows_just_one_empty(art["artikelnr"]);
+
     }
 
     art_add(artnr: string) {
@@ -2780,7 +2802,7 @@ export class qtService {
             kleur = this.formdef["bootstrapcolumns"][this.btc_idx].rows[i].values[this.kleur_idx];
             maat = this.formdef["bootstrapcolumns"][this.btc_idx].rows[i].values[this.maat_idx];
             if (artnr == art.artikelnr) {
-                index = _rows.findIndex(_row => _row.kleur == kleur);
+                index = _rows.findIndex(_row => _row.Kleur == kleur);
                 if (index == -1) {
                     _rows.push(this.creatematrixrow(kleur, art.artmaat));// add item if not present in maat/kleur in artikelstam
                     index = _rows.length - 1;
@@ -2809,6 +2831,7 @@ export class qtService {
 
 
         this.colsmatrix = _cols;
+        this.colsqtitle = _cols;
 
         this.button_ovt_label = "overzicht";
 
@@ -2945,7 +2968,7 @@ export class qtService {
                             bOk = false;
                         }
                         else {
-                            index = this.rowsvrrdmatrix.findIndex(vrrdart => vrrdart.kleur === kleur);
+                            index = this.rowsvrrdmatrix.findIndex(vrrdart => vrrdart.Kleur === kleur);
                             if (index >= 0) {
                                 vrrdaantal = this.rowsvrrdmatrix[index][maat] * 1;
                                 if (isNaN(vrrdaantal)) {
@@ -2984,10 +3007,10 @@ export class qtService {
         }
         else {
             for (let i = 0; i < this.rowsmatrix.length; i++) {
-                kleur = this.rowsmatrix[i].kleur;
+                kleur = this.rowsmatrix[i].Kleur;
                 for (var maat in this.rowsmatrix[i]) {
 
-                    if (maat != "kleur") {
+                    if (maat != "Kleur") {
                         propertyname = artnr + kleur + maat;
 
                         aantal = this.rowsmatrix[i][maat] * -1;
@@ -3206,6 +3229,7 @@ export class qtService {
         this.rowsvrrdmatrix = _rows;
         this.colsvrrdmatrix = _colsvrrdmatrix;
         this.colvrrdstyles = this.colvrrdstyles_single;
+
         this.rows_disabled_cells = _rows_disabled_cells;
         this.voorraad_id = this.getvoorraadstatus(this.matrixtitle);
 
@@ -3481,98 +3505,91 @@ export class qtService {
     showtooltip(event) {
         let id = event.currentTarget.id;
         let bDragable = false;
-        if (id == "clientname") {
-            if (this.bHideToolTip) {
-                this.sToolTip = "dubbelklik  hier om tooltips in te schakelen";
-            }
-            else {
-                this.sToolTip = "dubbelklik hier om tooltips uit te schakelen";
-            }
-        }
 
-        else {
 
-            if (this.bHideToolTip) return;
-            this.sToolTip = "";
-            switch (id) {
-                case "nieuwartikel":
-                    {
-                        this.sToolTip = "type nieuw artikelnummer of dubbelklik voor foto's"
+
+
+        if (this.bHideToolTip) return;
+        this.sToolTip = "";
+        switch (id) {
+            case "nieuwartikel":
+                {
+                    this.sToolTip = "type nieuw artikelnummer of dubbelklik voor foto's"
+                }
+                break;
+
+            case "clear":
+                {
+                    this.sToolTip = "wis alle inhoud van dit scherm";
+                }
+                break;
+            case "search":
+                {
+                    this.sToolTip = "vind alle orders met de waardes zoals die zijn ingevuld op het scherm";
+                }
+                break;
+            case "overzicht":
+                {
+                    if (!this.bSummy) {
+                        this.sToolTip = "voer de bestelling in voor artikel " + this.matrixtitle + ". Klik voor het overzicht van alle bestelde artikelen. Je kunt dan de bestelling niet aanpassen";
                     }
+                    else {
+                        this.sToolTip = "klik om de bestelling aan te passen";
+                    }
+                }
+                break;
+            case "excel":
+                {
+
+                    if (!this.bSummy) {
+                        this.sToolTip = "Klik op de knop 'overzicht' om deze knop te activeren";
+                    }
+                    else {
+                        this.sToolTip = "Klik voor 'copy' van deze order naar het computergeheugen. Ga dan naar een werkblad in Excel druk ctrl+V (paste)";
+                    }
+                }
+                break;
+            case "voorraadbasic":
+                {
+                    this.sToolTip = "dit artikel blijft ieder seizoen in de collectie. Voorzover er voorraad aanwezig is, kan dit artikel binnen 3 dagen worden geleverd "
+                    bDragable = true;
                     break;
-
-                case "clear":
-                    {
-                        this.sToolTip = "wis alle inhoud van dit scherm";
-                    }
+                }
+            case "voorraadnotcounted":
+                {
+                    this.sToolTip = "de getoonde voorraad en dus levering van dit artikel is 3 dagen, maar onder voorbehoud."
+                    bDragable = true;
                     break;
-                case "search":
-                    {
-                        this.sToolTip = "vind alle orders met de waardes zoals die zijn ingevuld op het scherm";
-                    }
+                }
+            case "voorraadcounted":
+                {
+                    this.sToolTip = "voor zover voorraad aanwezig: dit artikel kan binnen 3 dagen worden geleverd";
+                    bDragable = true;
                     break;
-                case "overzicht":
-                    {
-                        if (!this.bSummy) {
-                            this.sToolTip = "voer de bestelling in voor artikel " + this.matrixtitle + ". Klik voor het overzicht van alle bestelde artikelen. Je kunt dan de bestelling niet aanpassen";
-                        }
-                        else {
-                            this.sToolTip = "klik om de bestelling aan te passen";
-                        }
+                }
+
+            default:
+                {
+
+                    let btcindex = 0;
+                    let index;
+                    for (btcindex = 0; btcindex < this.visible_fields.length; btcindex++) {
+                        index = this.visible_fields[btcindex].findIndex(field => field.name == id);
+
+                        if (index >= 0) break;
                     }
-                    break;
-                case "excel":
-                    {
-
-                        if (!this.bSummy) {
-                            this.sToolTip = "met deze knop kun je de gegevens copieren naar Excel. Maar klik eerst op de knop 'overzicht'";
-                        }
-                        else {
-                            this.sToolTip = "copieer de inhoud van dit scherm naar het clipboard / klembord. Open dan Excel en paste / ctrl+V";
-                        }
+                    if (index == -1) {
                     }
-                    break;
-                case "voorraadbasic":
-                    {
-                        this.sToolTip = "dit artikel blijft ieder seizoen in de collectie. Voorzover er voorraad aanwezig is, kan dit artikel binnen 3 dagen worden geleverd "
-                        bDragable = true;
-                        break;
+                    else {
+                        this.sToolTip = this.formdef["bootstrapcolumns"][btcindex].fielddefs[this.visible_fields[btcindex][index].field_idx].tooltip;
                     }
-                case "voorraadnotcounted":
-                    {
-                        this.sToolTip = "de getoonde voorraad en dus levering van dit artikel is 3 dagen, maar onder voorbehoud."
-                        bDragable = true;
-                        break;
-                    }
-                case "voorraadcounted":
-                    {
-                        this.sToolTip = "voor zover voorraad aanwezig: dit artikel kan binnen 3 dagen worden geleverd";
-                        bDragable = true;
-                        break;
-                    }
-
-                default:
-                    {
-
-                        let btcindex = 0;
-                        let index;
-                        for (btcindex = 0; btcindex < this.visible_fields.length; btcindex++) {
-                            index = this.visible_fields[btcindex].findIndex(field => field.name == id);
-
-                            if (index >= 0) break;
-                        }
-                        if (index == -1) {
-                        }
-                        else {
-                            this.sToolTip = this.formdef["bootstrapcolumns"][btcindex].fielddefs[this.visible_fields[btcindex][index].field_idx].tooltip;
-                        }
-                    }
-                    break;
+                }
+                break;
 
 
 
 
-            }
+
         }
 
 
@@ -3603,10 +3620,7 @@ export class qtService {
 
     }
 
-    toggle_tooltip() {
-        this.bHideToolTip = !this.bHideToolTip;
-        window.localStorage.setItem('bHideToolTip', this.bHideToolTip.toString());
-    }
+
 
     voorraadmessage(art) {
         if (art.dynclass == "blurred") {
@@ -3875,6 +3889,25 @@ export class qtService {
 
     };
 
+    help(Sortof: string) {
+        if (Sortof == "algemeen") {
+            this.bMessage = true;
+            this.sDialogHeader="Bestelpagina van sohia Perla"
+            this.sDialogMsg = "Via deze internetpagina kunt U bestellingen doorgeven aan Sophia Perla Almelo. \nAls U uw bestelling  bewaart, heeft U de rest van de dag de gelegenheid om die bestelling nog aan te passen. Pas aan het einde van de dag wordt de bestelling definitief opgenomen in het bestelboek van Sophia Perla en kunt U de bestelling niet meer aanpassen.  U kunt uw eigen bestellinghistorie inzien door op de knop ‘Zoek’ te klikken. U krijgt dan de eerste order te zien die U bij Sophia Perla via deze internetpagina heeft opgegeven. Met de knoppen ‘begin’, ‘verder’, ‘terug’ en ‘eind’ kunt U heen en terug gaan in Uw historie. En, zoals gezegd: als een bestelling vandaag is opgegeven kunt U die nog aanpassen. Bestellingen kunt U opgeven door op de knop ‘foto’s’ te klikken. U ziet dan een venster met de foto’s van alle artikelen. U klikt dan op de foto’s van de artikelen die U wilt bestellen. Is Uw selectie voltooid, dan drukt U op de knop ‘verbergen’ die recht boven in het foto’s venster staat. Het foro’s venster verdwijnt en U ziet de gewenste artikelen in de linker tabel van het bestelvenster. In het rechtervenster geeft U de aantallen op in de gewenste maat / kleur. Door in de linkertabel op een regel te klikken, verandert de context in de rechtertabel.";
+
+        }
+        if (Sortof == "tooltiptoggle") {
+
+            this.bHideToolTip = !this.bHideToolTip;
+            window.localStorage.setItem('bHideToolTip', this.bHideToolTip.toString());
+            if (this.bHideToolTip) this.sTooltipMessage = "klik om tooltips in te schakelen";
+            else this.sTooltipMessage = "klik om tooltips uit te schakelen";
+                
+            }
+        
+
+    }
+
 
 
     Excel() {
@@ -3945,25 +3978,24 @@ export class qtService {
         ssCSV = ssCSV + "\r\n" + "\r\n";
         let sRow = "";
 
+        this.colsqtitle.forEach(title => ssCSV = ssCSV + title + "\t");
+        ssCSV = ssCSV + "\r\n";
+
         for (let rowcount = 0; rowcount < this.rowsmatrix.length; rowcount++) {
-            for (let field in this.rowsmatrix[rowcount]) {
-                if (this.rowsmatrix[rowcount][field] != null)
+            for (let colcount = 0; colcount < this.colsmatrix.length; colcount++) {
+                if (this.rowsmatrix[rowcount][this.colsmatrix[colcount]] != null)
                     ssCSV =
-                        ssCSV + this.rowsmatrix[rowcount][field] + "\t";
+                        ssCSV + this.rowsmatrix[rowcount][this.colsmatrix[colcount]] + "\t";
                 else {
                     ssCSV = ssCSV + "\t";
                 }
-                if (rowcount == 0) {
-                    column_count++
-                }
+
             }
             ssCSV = ssCSV + "\r\n";
-            if (rowcount == 0) {
-                ssCSV = ssCSV + "\r\n";
-            }
+
         }
 
-        for (let i = 0; i < column_count - 2; i++) {
+        for (let i = 0; i < this.colsqtitle.length - 2; i++) {
             ssCSV = ssCSV + "\t";
         }
         for (let i = 1; i < this.totals.length; i++) {
