@@ -106,6 +106,7 @@ export class qtService {
     move_direction = 0;
     galleryrows = 12;
     gallerypagelinks = 10;
+    MessageClass = "";
     tttop = "";
     ttleft = "";
     sToolTip = "";
@@ -119,7 +120,7 @@ export class qtService {
     sDialogHeader = "test";
     sGalleryHeader;
     sDialogMsg = "testest";
-    sTooltipMessage = "klik om tooltips uit te schakelen"
+    sTooltipMessage = "Tooltips aan"
     formname = "order";
     formdef_id = "";
     button_ovt_label = "overzicht";
@@ -497,7 +498,11 @@ export class qtService {
     initUser_part3(serverversions) {
         this.cursorShape = "wait";
 
+        if (window.localStorage.getItem('seizoen') == null) {
+            this.help("algemeen");
 
+
+        }
         this.disable_nwArtikel = true;
         var tbversion: tbversion = {};
         if (serverversions.rows != undefined) {
@@ -1875,7 +1880,7 @@ export class qtService {
 
 
         if (this.galleryclass == "col-xs-12 col-sm-3 col-md-1") {
-            this.galleryclass = "col-xs-12 col-sm-4 col-md-2";
+            this.galleryclass = "col-xs-12 col-sm-6 col-md-2";
             this.gallerybutton_label = "kleine plaatjes";
             this.galleryrows = 12;
             this.gallerypagelinks = 3;
@@ -2485,6 +2490,7 @@ export class qtService {
 
     HideMessage() {
         this.bMessage = false;
+        this.MessageClass = "";
         //  this.sDialogHeader = "";
         // this.sDialogMsg = "";
         // this.bArtikelGallery = false;
@@ -3510,14 +3516,18 @@ export class qtService {
 
 
         if (this.bHideToolTip) return;
-        this.sToolTip = "";
+        this.sToolTip = null;
         switch (id) {
             case "nieuwartikel":
                 {
                     this.sToolTip = "type nieuw artikelnummer of dubbelklik voor foto's"
                 }
                 break;
-
+            case "leveringtext":
+                {
+                    this.sToolTip = "indicatie van de levertijd voor deze bestelling";
+                }
+                break;
             case "clear":
                 {
                     this.sToolTip = "wis alle inhoud van dit scherm";
@@ -3531,7 +3541,7 @@ export class qtService {
             case "overzicht":
                 {
                     if (!this.bSummy) {
-                        this.sToolTip = "voer de bestelling in voor artikel " + this.matrixtitle + ". Klik voor het overzicht van alle bestelde artikelen. Je kunt dan de bestelling niet aanpassen";
+                        this.sToolTip = "klik voor het overzicht van alle bestelde artikelen.";
                     }
                     else {
                         this.sToolTip = "klik om de bestelling aan te passen";
@@ -3567,6 +3577,10 @@ export class qtService {
                     bDragable = true;
                     break;
                 }
+            case "lefttable":
+                {
+                    this.sToolTip = "klik op een rij in deze tabel om voor dit artikel te bestellen "
+                }
 
             default:
                 {
@@ -3597,11 +3611,25 @@ export class qtService {
 
         if (this.sToolTip != null) {
             if (!bDragable) {
-                this.tttop = event.currentTarget.getBoundingClientRect().top + "px";
-                this.ttleft = event.currentTarget.getBoundingClientRect().right + "px";
+                if (id != "lefttable") {
+                    if (event.currentTarget.firstElementChild != null) {
+                        this.tttop = (event.currentTarget.firstElementChild.getBoundingClientRect().top) + "px";
+                        this.ttleft = event.currentTarget.firstElementChild.getBoundingClientRect().right + "px";
+                    }
+                    else {
+                        this.tttop = (event.currentTarget.getBoundingClientRect().top) + "px";
+                        this.ttleft = event.currentTarget.getBoundingClientRect().right + "px";
+                    }
+
+                }
+                else {
+                    this.tttop = (event.currentTarget.getBoundingClientRect().top + 130) + "px";
+                    this.ttleft = event.currentTarget.getBoundingClientRect().right + "px";
+                }
             }
+
             else {
-                this.tttop = (event.currentTarget.firstElementChild.getBoundingClientRect().top) + "px";
+                this.tttop = ((event.currentTarget.firstElementChild.getBoundingClientRect().top) + 30) + "px";
                 this.ttleft = event.currentTarget.firstElementChild.getBoundingClientRect().right + "px";
             }
 
@@ -3610,7 +3638,7 @@ export class qtService {
         }
 
 
-        this.timeout_id = setTimeout(() => { this.bToolTipHide = true; }, 3000)
+        this.timeout_id = setTimeout(() => { this.bToolTipHide = true; }, 3000);
     }
 
     hidetooltip() {
@@ -3892,19 +3920,23 @@ export class qtService {
     help(Sortof: string) {
         if (Sortof == "algemeen") {
             this.bMessage = true;
-            this.sDialogHeader="Bestelpagina van sohia Perla"
-            this.sDialogMsg = "Via deze internetpagina kunt U bestellingen doorgeven aan Sophia Perla Almelo. \nAls U uw bestelling  bewaart, heeft U de rest van de dag de gelegenheid om die bestelling nog aan te passen. Pas aan het einde van de dag wordt de bestelling definitief opgenomen in het bestelboek van Sophia Perla en kunt U de bestelling niet meer aanpassen.  U kunt uw eigen bestellinghistorie inzien door op de knop ‘Zoek’ te klikken. U krijgt dan de eerste order te zien die U bij Sophia Perla via deze internetpagina heeft opgegeven. Met de knoppen ‘begin’, ‘verder’, ‘terug’ en ‘eind’ kunt U heen en terug gaan in Uw historie. En, zoals gezegd: als een bestelling vandaag is opgegeven kunt U die nog aanpassen. Bestellingen kunt U opgeven door op de knop ‘foto’s’ te klikken. U ziet dan een venster met de foto’s van alle artikelen. U klikt dan op de foto’s van de artikelen die U wilt bestellen. Is Uw selectie voltooid, dan drukt U op de knop ‘verbergen’ die recht boven in het foto’s venster staat. Het foro’s venster verdwijnt en U ziet de gewenste artikelen in de linker tabel van het bestelvenster. In het rechtervenster geeft U de aantallen op in de gewenste maat / kleur. Door in de linkertabel op een regel te klikken, verandert de context in de rechtertabel.";
+            this.MessageClass = "welcometext";
+            this.sDialogHeader = "Bestelpagina van Sophia Perla";
+            let welcomeMessage = "";
+            welcomeMessage = welcomeMessage + "Welkom op de bestelpagina van Sophia Perla. <br /> <br />";
+            welcomeMessage = welcomeMessage + "Geef Uw bestelling op door eerst op de foto's te klikken van de gewenste artikelen. Nadat U de foto's heeft verborgen met de knop 'verberg' kunt U van de aantallen per maat / kleur opgeven. Als U uw bestelling bewaart (klik de knop 'Bewaar'), dan heeft U de rest van de dag de gelegenheid om die bestelling nog aan te passen. Pas aan het einde van de dag wordt de bestelling definitief opgenomen in het bestelboek van Sophia Perla en kunt U de bestelling niet meer aanpassen.  <br /> <br /> U kunt uw eigen bestellinghistorie inzien door op de knop ‘Zoek’ te klikken. U krijgt dan de eerste order te zien die U bij Sophia Perla via deze bestelpagina heeft opgegeven. Met de knoppen ‘begin’, ‘verder’, ‘terug’ en ‘eind’ kunt U heen en terug gaan in Uw historie. En, zoals gezegd: als een bestelling vandaag is opgegeven kunt U die bestelling nog aanpassen. <br /> <br /> Bij veel plekken op scherm verschijnt een help tekst als U met de muis over dat gebied heen beweegt. U kunt die helpteksten uit/inschakelen door met de  muis op 'help'  te klikken en vervolgens op de knop 'Tooltips uit'/'Tooltips aan'  te klikken. <br /> <br /> U kunt deze tekst altijd oproepen door met de muis naar ' help'  te gaan en dan te klikken op 'Welkom tekst'";
+            this.sDialogMsg = welcomeMessage;
 
         }
         if (Sortof == "tooltiptoggle") {
 
             this.bHideToolTip = !this.bHideToolTip;
             window.localStorage.setItem('bHideToolTip', this.bHideToolTip.toString());
-            if (this.bHideToolTip) this.sTooltipMessage = "klik om tooltips in te schakelen";
-            else this.sTooltipMessage = "klik om tooltips uit te schakelen";
-                
-            }
-        
+            if (this.bHideToolTip) this.sTooltipMessage = "Tooltips aan";
+            else this.sTooltipMessage = "Tooltips uit";
+
+        }
+
 
     }
 

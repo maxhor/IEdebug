@@ -152,6 +152,18 @@ a, button{
     padding: 20px;
 }
 
+.welcometext .ui-dialog{
+   width: 44% !important;
+    margin: auto !important;
+        left: 250px!important;
+    top: 130px!important;
+    
+}
+.welcometext .ui-dialog-content
+{
+text-align: justify !important;
+}
+
 body .btn-custom, .btn-custom {
     background: none;
     display: inline-block;
@@ -169,7 +181,10 @@ body .btn-custom, .btn-custom {
     text-shadow: 0 1px 2px #5E768A;
     font-weight: bold !important;
     box-shadow: 0px 2px 0px 0px #989C9F;
-    min-width:123px;
+    min-width:110px;
+}
+#nieuwartikel input.ui-inputtext.ui-widget.ui-state-default.ui-corner-all {
+    width: 95%;
 }
 
 .btn-custom:hover, body .btn-custom:hover
@@ -367,9 +382,8 @@ form .form-control{
     border-right:1px solid #ccc;
 }
 .buttonbar{
-    
-    margin: auto;  
-   
+   margin: 0 auto !important;
+    text-align: center;
 }
 .kop{
     padding-bottom: 5%;
@@ -747,6 +761,9 @@ td.ui-editable-column {
     margin:0;
     text-align: center;
 }
+#opening_message{
+    
+}
 
 #artikelimages,#voorraad .ui-dialog{
     padding: 0em;
@@ -865,14 +882,14 @@ footer #error{
     
 }
 #help{
-    float: right;
+   
     font-size: 50%;
 }
 
 .dropbtn {
     background-color: #4CAF50;
     color: white;
-    padding: 16px;
+    padding: 10px;
     font-size: 16px;
     border: none;
     cursor: pointer;
@@ -915,6 +932,16 @@ footer #error{
 .dropdown:hover .dropbtn {
     background-color: #3e8e41;
 }
+
+.helpbutton{
+    background-color: #85ad94;;
+    width: 100%;
+} 
+
+.helpbutton:hover{
+    background-color: #4CAF50;;
+}
+ 
 
 .responsive-width {
     font-size: 1.5vw !important;

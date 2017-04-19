@@ -18,7 +18,7 @@
         <div [id]="galaryindex" [class]="qtService.galleryclass" (click)="qtService.art_add_from_gallery(artikel)" 
        >
 <p-panel [header]="artikel.artikelnr + '         '" >
-    <img class="galleryimage"  [ngClass] = "artikel.dynclass" src="fotoos/{{artikel.omschr}}.jpg" alt="Image not found" onerror="this.src='../fotoos/Alia.jpg';">
+    <img class="galleryimage"  [ngClass] = "artikel.dynclass" src="fotoos/{{artikel.omschr}}.jpg" alt="Image not found" onerror="this.src='../fotoos/default.jpg';">
 
 <hr class="ui-widget-content" style="border-top:0"> {{artikel.voorraad}}
 

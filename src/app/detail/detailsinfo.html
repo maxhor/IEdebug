@@ -34,30 +34,32 @@
 </p-dialog>
 
 
-<p-dataTable class="datatable col-sm-2" [value]="qtService.rowsvalues" (onRowClick)="qtService.onRowClick($event)" selectionMode="single"
-	(onRowDblclick)="qtService.deleteItemDialogue($event)" paginator="true" [rows]="6" [responsive]="true" emptyMessage="" [style]="qtService.iteminputstyle">
+<p-dataTable id="lefttable" class="datatable col-sm-2"  [value]="qtService.rowsvalues" (onRowClick)="qtService.onRowClick($event)" selectionMode="single" 
+(onRowDblclick)="qtService.deleteItemDialogue($event)" paginator="true" [rows]="6" 
+[responsive]="true" emptyMessage="" [style]="qtService.iteminputstyle">
 
 	<p-header id="iteminput">
 		<span (mouseover)="qtService.nwArtikelMsg()" (mouseleave)="qtService.CloseBtnMsg()">
            <button type="button"   class="bluebutton" [disabled]="qtService.disable_nwArtikel" style="float:left" (click)="qtService.toggleArtikelGallery()" >foto's
 </button>
-<button type="button" class="bluebutton" [disabled]="qtService.disable_nwArtikel" style="float:right" (click)="qtService.ClearNwArtikel()" >nieuw artikel
+<button id="nieuwartikel" type="button" class="bluebutton" [disabled]="qtService.disable_nwArtikel" style="float:right" 
+(click)="qtService.ClearNwArtikel()" (mouseover)="qtService.showtooltip($event)" >nieuw artikel
 </button>
 <div>
 	<p-autoComplete [class.notcounted]="!qtService.bCounted" [suggestions]="qtService.arts" (completeMethod)="qtService.filter_from_artgallery($event)"
 		[minLength]="0" [dropdown]="true" (onDropdownClick)="qtService.handle_artikel_dropdown($event)" placeholder="type hier volgend artikel" (onSelect)="qtService.art_add($event)"
-		formControlName="nwartikel" (mouseover)="qtService.showtooltip($event)" id="nieuwartikel" (mouseleave)="qtService.hidetooltip(qqw)"
+		formControlName="nwartikel"  id="nieuwartikel" (mouseleave)="qtService.hidetooltip(qqw)"
 		(change)="qtService.art_addfromchange_event($event)">
 	</p-autoComplete>
 </div>
 </span>
 </p-header>
-<p-column>
+<p-column >
 	<ng-template pTemplate type="header">
 
 	</ng-template>
-	<ng-template let-artdata="rowData" let-index="rowIndex" pTemplate type="body">
-		<span [style.color]="artdata.icon_color" class="{{qtService.iconRowHeader[index]}}"></span>
+	<ng-template  let-artdata="rowData" let-index="rowIndex" pTemplate type="body">
+		<span  [style.color]="artdata.icon_color" class="{{qtService.iconRowHeader[index]}}"></span>
 	</ng-template>
 </p-column>
 

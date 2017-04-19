@@ -1,6 +1,5 @@
 
-
-<img src="../fotoos/help_a.pdf" >
+<div>
 
 <div class="container-fluid"> 
 	<h1>
@@ -13,6 +12,10 @@
 </h1>
 
 <div>
+
+	<div id="opening_message">
+	
+		</div>
 <kop-info ></kop-info>
 
 
@@ -30,9 +33,10 @@
 </div>
 
 <div class="mydialog">
-	<p-dialog id="mydialog" [header]="qtService.sDialogHeader" modal="true" [visible]="qtService.bDialog_JaNee" showEffect="fade"
+	<p-dialog id="mydialog"  [header]="qtService.sDialogHeader" modal="true" [visible]="qtService.bDialog_JaNee" showEffect="fade"
 		[closable]="false">
 		<p class="message"> {{qtService.sDialogMsg}}</p>
+		
 		<footer>
 			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
 				<button type="button" style="float: left;" pButton icon="fa-close" (click)="qtService.execute_request()" label="Ja"></button>
@@ -56,9 +60,9 @@
 </div>
 
 <div>
-	<p-dialog id="mydialog" [header]="qtService.sDialogHeader" [visible]="qtService.bMessage" showEffect="fade" [closable]="false">
-		<p img src="../fotoos/Alice Uni.jpg" ></p>
-		<p class="message" >{{qtService.sDialogMsg}}</p>
+	<p-dialog id="mydialog" [class]="qtService.MessageClass" [header]="qtService.sDialogHeader" [visible]="qtService.bMessage" showEffect="fade" [closable]="false">
+		
+		<p class="message" [innerHTML]="qtService.sDialogMsg"></p>
 		<footer>
 			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
 				<button type="button" style="float: none;" pButton icon="fa-check" (click)="qtService.HideMessage(true)" label="Ok"></button>
