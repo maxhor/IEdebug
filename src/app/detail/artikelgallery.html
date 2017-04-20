@@ -1,7 +1,7 @@
 <div class="container-fluid">
 
     <p-dialog class="artikelimages" [visible]="qtService.bArtikelGallery" [closable]="false"  position="center top" [responsive]="true"
-        [width]="1300" [height]="900" [style]="{'overflow':'scroll','background-color' :'#ffffe6'}" [showHeader]="'false'">
+        [width]="950" [style]="{'overflow':'scroll','background-color' :'#ffffe6'}" [showHeader]="'false'">
 
         <p-dataGrid id="artgallery" [value]="qtService.artgallery" [paginator]="true" [rows]="qtService.galleryrows" [pageLinks]="qtService.gallerypagelinks">
             <p-header class="ui-dialog-draggable">
