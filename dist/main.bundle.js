@@ -81,7 +81,7 @@ var ServerConstants = (function () {
     function ServerConstants() {
         this.rooturl = 'http://localhost:53823/';
         this.loginurl = 'http://localhost:53823/';
-        this.is_production = false;
+        this.is_production = true;
         this.headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]();
         this.headers.append('Content-Type', 'application/json');
         this.headers.append('Access-Control-Allow-Origin', 'http://localhost:4200');
