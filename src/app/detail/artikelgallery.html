@@ -1,7 +1,7 @@
 <div class="container-fluid">
 
     <p-dialog class="artikelimages" [visible]="qtService.bArtikelGallery" [closable]="false"  position="center top" [responsive]="true"
-        [width]="950" [style]="{'overflow':'scroll','background-color' :'#ffffe6'}" [showHeader]="'false'">
+        [style]="{'overflow':'scroll','background-color' :'#ffffe6'}" [showHeader]="'false'">
 
         <p-dataGrid id="artgallery" [value]="qtService.artgallery" [paginator]="true" [rows]="qtService.galleryrows" [pageLinks]="qtService.gallerypagelinks">
             <p-header class="ui-dialog-draggable">
@@ -18,7 +18,7 @@
         <div [id]="galaryindex" [class]="qtService.galleryclass" (click)="qtService.art_add_from_gallery(artikel)" 
        >
 <p-panel [header]="artikel.artikelnr + '         '" >
-    <img class="galleryimage"  [ngClass] = "artikel.dynclass" src="fotoos/{{artikel.omschr}}.jpg" alt="Image not found" onerror="this.src='../fotoos/default.jpg';">
+    <img class="galleryimage img-responsive"  [ngClass] = "artikel.dynclass" src="fotoos/{{artikel.omschr}}.jpg" alt="Image not found" onerror="this.src='../fotoos/default.jpg';">
 
 <hr class="ui-widget-content" style="border-top:0"> {{artikel.voorraad}}
 

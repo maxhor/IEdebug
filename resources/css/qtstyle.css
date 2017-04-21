@@ -1024,3 +1024,7 @@ li:hover {background-color: #AAA}
 
 
  
+.artikelimages  .ui-dialog-draggable {
+width:50% !important;
+max-width: 950px;
+}
