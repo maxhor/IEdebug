@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 .galleryimage{
-    background-color: red;
+ 
     width: 100%;
 }
 artikelgallery .col-sm-4, .col-xs-12{
@@ -452,7 +452,7 @@ textarea {
    position: absolute;
    
    width: 0;
-   height: 0;
+   height: 0px;
    border-top: 13px solid transparent;
    border-right: 26px solid#555;
    border-bottom: 13px solid transparent;
@@ -475,10 +475,7 @@ textarea {
     
     border: 10px solid #888;
     background-color: #ffffcc;
-    padding-left:5%;
-    padding-right:5%;
-    padding-top:9%;
-    padding-bottom:12%;
+  
 }
 
 .ui-dialog{

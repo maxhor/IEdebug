@@ -337,7 +337,7 @@ export class qtService {
         //  this.sDialogHeader = "geen invoer aanwezig";
         //this.bMessage=true;
         //}
-        else if (!this.kopForm.pristine || !this.adresForm.pristine) {
+        else if (this.bDetailChanged || !this.kopForm.pristine || !this.adresForm.pristine) {
             if (!this.kopForm.valid) {
                 this.sDialogHeader = "foute / onvolledige invoer";
                 this.bMessage = true;
@@ -602,6 +602,7 @@ export class qtService {
                         this.dropdownlist_adres[0] = "nieuwadres"
                     }
                 }
+
             }
         }
 
@@ -619,6 +620,7 @@ export class qtService {
                         }
                     }
                     else {
+
                         this.all_art = data;
                         this.tbversion.artikelen = tbversion.artikelen;
                         window.localStorage.setItem('artikelen', JSON.stringify(data));
@@ -1570,7 +1572,14 @@ export class qtService {
             this.sBevestigdMessage = "";
             this.bBevestigd = false;
         }
-        this.adresheader = this.kopForm.get("afleveradres").value + " adres " + this.kopForm.get("naam").value;
+        if (this.user.role == "customer") {
+
+            this.adresheader = this.kopForm.get("afleveradres").value + " adres " + this.user.naam_plaats;
+        }
+        else {
+            this.adresheader = this.kopForm.get("afleveradres").value + " adres " + this.kopForm.get("naam").value;
+
+        }
 
 
     }
@@ -2268,9 +2277,10 @@ export class qtService {
 
     populate_adrespopup(adreslabel) {
         let relatienr;
-        debugger;
+
         if (this.user.role == "customer") {
             relatienr = this.user.relatienr;
+            this.kopForm.controls["afleveradres"].setValue(adreslabel);// for customer, no populate_relatie. thats done in server via 'defaults' 
             this.adresheader = adreslabel + " adres " + this.user.naam_plaats;
         }
         else {
@@ -2473,6 +2483,9 @@ export class qtService {
 
         this.dropdownlist_adres = this.all_adres["rows"].filter(adres => adres.values[1] == relatienr).map(adres =>
             adres.values[2])
+        if (this.dropdownlist_adres.length > 0) {
+            this.populate_adrespopup(this.dropdownlist_adres[0]);
+        }
 
         return this.dropdownlist_adres[0];
     }
@@ -2815,6 +2828,8 @@ export class qtService {
                     index = _rows.length - 1;
                 }
                 _rows[index][maat] = this.formdef["bootstrapcolumns"][this.btc_idx].rows[i].values[this.aantal_idx] * -1;
+
+               
             }
         }
 
@@ -2981,11 +2996,11 @@ export class qtService {
                                 if (isNaN(vrrdaantal)) {
                                     vrrdaantal = 0;
                                 }
-                                let propname = artnr + kleur + maat;
+                                let propertyname = artnr + kleur + maat;
                                 let index2 = this.lookup_userdata[propertyname];
                                 let oudaantal = 0;
                                 if (index2 >= 0) {
-                                    oudaantal = this.formdef["bootstrapcolumns"][this.btc_idx].rows[index2].oldvalues[this.aantal_idx];
+                                    oudaantal = this.formdef["bootstrapcolumns"][this.btc_idx].rows[index2].oldvalues[this.aantal_idx] *-1;
                                 }
 
                                 if (vrrdaantal < aantal - oudaantal && aantal > 0 && this.seizoen["iscurrent"] != "1") {
@@ -3202,7 +3217,7 @@ export class qtService {
                                 && _tthis.all_voorraad["rows"][j].values[dim2waarde_idx] == attribute) {
                                 bFound = true;
                                 _row[attribute] = _tthis.all_voorraad["rows"][j].values[vrrdecono_idx];
-                                if ((_row[attribute] <= 0) && this.seizoen["iscurrent"] != "1") {
+                                if ((_row[attribute] <= 0) && row[attribute] == null && this.seizoen["iscurrent"] != "1") {
                                     _row_disabled_cells.push("cell_disabled");
 
                                 }
@@ -3216,7 +3231,7 @@ export class qtService {
                     }
                     if (!bFound) {
                         _row[attribute] = null;
-                        if (this.seizoen["iscurrent"] != "1") _row_disabled_cells.push("cell_disabled");
+                        if (row[attribute] == null && this.seizoen["iscurrent"] != "1") _row_disabled_cells.push("cell_disabled");
                         else _row_disabled_cells.push("");
                     }
 
@@ -3767,9 +3782,14 @@ export class qtService {
             .filter(artikel =>
                 this.artikelfilter(artikel))
             .map(function (artikel) {
+
                 //  let voorraad = _tthis.TotalVrrdForArtikel(artikel.artikelnr);
                 let omschr = artikel.omschr;
+
                 if (artikel.omschr == " ") omschr = artikel.artikelnr;
+                //  alert(omschr);
+
+
                 if (this == undefined) {
                     let numDummy = 0;
                 }
