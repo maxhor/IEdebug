@@ -86,6 +86,9 @@ var ServerConstants = (function () {
         this.headers.append('Access-Control-Allow-Origin', 'http://localhost:4200');
         this.headers.append('Accept', 'q=0.8;application/json;q=0.9');
         alert(window.location.href.indexOf("localhost"));
+        if (window.location.href.indexOf("localhost") < 0) {
+            this.loginurl = "login/";
+        }
     }
     return ServerConstants;
 }());
