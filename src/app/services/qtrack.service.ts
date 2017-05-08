@@ -404,8 +404,10 @@ export class qtService {
 
         this.user = user;
         this.dbname = user.dbname
+               
+        
         this.tbversion = JSON.parse(window.localStorage.getItem('tbversion'));
-        if (this.ServerConstants.is_production) {
+        if (window.location.href.indexOf("localhost")<0) {
             this.ServerConstants.rooturl = user.dbname + "/";
             this.ServerConstants.loginurl = "login/";
         }
