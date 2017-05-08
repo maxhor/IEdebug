@@ -1366,7 +1366,7 @@ export class qtService {
     setdefaults() {
         var index = 0;
         for (var i = 0; i < this.user["defaults"].length; i++) {
-
+debugger;
             if (this.kopForm.controls[this.user["defaults"][i].pair[0]] != undefined) {
                 this.kopForm.controls[this.user["defaults"][i].pair[0]].setValue(this.user["defaults"][i].pair[1]);
             }
