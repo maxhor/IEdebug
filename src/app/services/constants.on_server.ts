@@ -13,7 +13,7 @@ export class ServerConstants {
         this.headers.append('Content-Type', 'application/json');
         this.headers.append('Access-Control-Allow-Origin', 'http://localhost:4200');
         this.headers.append('Accept', 'q=0.8;application/json;q=0.9');
-        //alert(window.location.href.indexOf("localhost"));
+        alert(window.location.href.indexOf("localhost"));
 
   }
 
