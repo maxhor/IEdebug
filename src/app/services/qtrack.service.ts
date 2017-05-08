@@ -2993,6 +2993,9 @@ export class qtService {
                             index = this.rowsvrrdmatrix.findIndex(vrrdart => vrrdart.Kleur === kleur);
                             if (index >= 0) {
                                 vrrdaantal = this.rowsvrrdmatrix[index][maat] * 1;
+                                if(vrrdaantal<0){
+                                    vrrdaantal=0;//in case of negative stock, set stock=0 so user can always change oldamount into a new lesser amount
+                                }
                                 if (isNaN(vrrdaantal)) {
                                     vrrdaantal = 0;
                                 }
@@ -3630,11 +3633,11 @@ export class qtService {
                 if (id != "lefttable") {
                     if (event.currentTarget.firstElementChild != null) {
                         this.tttop = (event.currentTarget.firstElementChild.getBoundingClientRect().top) + "px";
-                        this.ttleft = event.currentTarget.firstElementChild.getBoundingClientRect().right + "px";
+                        this.ttleft = event.currentTarget.firstElementChild.getBoundingClientRect().right + 60 + "px";
                     }
                     else {
                         this.tttop = (event.currentTarget.getBoundingClientRect().top) + "px";
-                        this.ttleft = event.currentTarget.getBoundingClientRect().right + "px";
+                        this.ttleft = event.currentTarget.getBoundingClientRect().right  + "px";
                     }
 
                 }
