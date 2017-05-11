@@ -2822,8 +2822,12 @@ var qtService = (function () {
     qtService.prototype.art_add_from_gallery = function (art) {
         if (this.voorraadmessage(art))
             return;
+        if (this.all_voorraad == undefined)
+            return;
         this.art_add(art["artikelnr"]);
         this.setmatrixrows_just_one_empty(art["artikelnr"]);
+        //this.art_add(art["artikelnr"]);
+        //this.art_add(art["artikelnr"]);
     };
     qtService.prototype.art_add = function (artnr) {
         var upperartnr = artnr.toUpperCase();
@@ -3311,6 +3315,12 @@ var qtService = (function () {
         var _rows_disabled_cells = [];
         this.b_vrrd_single_item = true;
         this.button_singlevrrd_label = "alles";
+        if (this.all_voorraad == undefined) {
+            var _null_10 = [null, null, null, null, null, null, null, null, null, null];
+            for (var i = 0; i < 30; i++)
+                this.rows_disabled_cells.push(_null_10);
+            return;
+        }
         startindex = this.all_voorraad["rows"].findIndex(function (row) { return row.values[art_idx] == _this.matrixtitle; });
         this.bCounted = this.all_art_is_counted.indexOf(this.matrixtitle) >= 0 || this.seizoen["iscurrent"] == 1;
         // this.rowsvrrdmatrix= Object.assign({},this.rowsmatrix);

@@ -2566,8 +2566,13 @@ export class qtService {
     art_add_from_gallery(art: artgallery) {
 
         if (this.voorraadmessage(art)) return;
+        if (this.all_voorraad==undefined) return;
         this.art_add(art["artikelnr"]);
         this.setmatrixrows_just_one_empty(art["artikelnr"]);
+        //this.art_add(art["artikelnr"]);
+        //this.art_add(art["artikelnr"]);
+
+        
 
     }
 
@@ -2597,9 +2602,9 @@ export class qtService {
 
         artikel = this.findartikelbyartnr(artikel.artikelnr);
 
-
+        
         this.getmatrixrows(artikel);
-        this.getvrrdmatrixrows()
+        this.getvrrdmatrixrows();
         // if (this.all_art_is_counted.indexOf(artnr) >= 0 || this.seizoen["iscurrent"] == "1") {
         //     this.NewArtIconColor = this.color_counted;
         // }
@@ -3196,12 +3201,19 @@ export class qtService {
         var _rows_disabled_cells = [];
         this.b_vrrd_single_item = true;
         this.button_singlevrrd_label = "alles";
+        if(this.all_voorraad==undefined){
+          let   _null_10 = [null,null,null,null,null,null,null,null,null,null];
+          for(var i=0;i < 30;i++) this.rows_disabled_cells.push(_null_10);
+         
+          return;
+        }
 
         startindex = this.all_voorraad["rows"].findIndex(row => row.values[art_idx] == this.matrixtitle);
 
         this.bCounted = this.all_art_is_counted.indexOf(this.matrixtitle) >= 0 || this.seizoen["iscurrent"] == 1;
         // this.rowsvrrdmatrix= Object.assign({},this.rowsmatrix);
         this.rowsvrrdmatrix.length = 0;
+        
         var _tthis = this;
         this.rowsmatrix.forEach((row, loopcount) => {
             _row = new (rowdata);
