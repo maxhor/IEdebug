@@ -1878,13 +1878,14 @@ var qtService = (function () {
         var _this = this;
         var index = 0;
         for (var i = 0; i < this.user["defaults"].length; i++) {
-            debugger;
             if (this.kopForm.controls[this.user["defaults"][i].pair[0]] != undefined) {
                 this.kopForm.controls[this.user["defaults"][i].pair[0]].setValue(this.user["defaults"][i].pair[1]);
             }
             else {
                 var fieldindex = this.formdef["bootstrapcolumns"][0].fielddefs.findIndex(function (fielddef) { return fielddef.name == _this.user["defaults"][i].pair[0]; });
-                this.formdef["bootstrapcolumns"][0].fielddefs[fieldindex].value = this.user["defaults"][i].pair[1];
+                if (fieldindex >= 0) {
+                    this.formdef["bootstrapcolumns"][0].fielddefs[fieldindex].value = this.user["defaults"][i].pair[1];
+                }
             }
             if (this.user["defaults"][i].pair[0] == 'seizoen') {
                 if (this.kopForm.controls["seizoen"] != undefined) {
@@ -3922,7 +3923,7 @@ var qtService = (function () {
             this.sDialogHeader = "Bestelpagina van Sophia Perla";
             var welcomeMessage = "";
             welcomeMessage = welcomeMessage + "Welkom op de bestelpagina van Sophia Perla. <br /> <br />";
-            welcomeMessage = welcomeMessage + "Geef Uw bestelling op door eerst op de foto's te klikken van de gewenste artikelen. Nadat U de foto's heeft verborgen met de knop 'verberg' kunt U van de aantallen per maat / kleur opgeven. Als U uw bestelling bewaart (klik de knop 'Bewaar'), dan heeft U de rest van de dag de gelegenheid om die bestelling nog aan te passen. Pas aan het einde van de dag wordt de bestelling definitief opgenomen in het bestelboek van Sophia Perla en kunt U de bestelling niet meer aanpassen.  <br /> <br /> U kunt uw eigen bestellinghistorie inzien door op de knop ‘Zoek’ te klikken. U krijgt dan de eerste order te zien die U bij Sophia Perla via deze bestelpagina heeft opgegeven. Met de knoppen ‘begin’, ‘verder’, ‘terug’ en ‘eind’ kunt U heen en terug gaan in Uw historie. En, zoals gezegd: als een bestelling vandaag is opgegeven kunt U die bestelling nog aanpassen. <br /> <br /> Bij veel plekken op scherm verschijnt een help tekst als U met de muis over dat gebied heen beweegt. U kunt die helpteksten uit/inschakelen door met de  muis op 'help'  te klikken en vervolgens op de knop 'Tooltips uit'/'Tooltips aan'  te klikken. <br /> <br /> U kunt deze tekst altijd oproepen door met de muis naar ' help'  te gaan en dan te klikken op 'Welkom tekst'";
+            welcomeMessage = welcomeMessage + "Geef Uw bestelling op door eerst op de foto's te klikken van de gewenste artikelen. Dan verbergt U de foto's met de knop 'verberg'. Het window om de gewenste aantallen per maat / kleur in te geven wordt daarmee zichtbaar. Als U uw bestelling bewaart (klik de knop 'Bewaar'), dan heeft U de rest van de dag de gelegenheid om die bestelling nog aan te passen. Pas aan het einde van de dag wordt de bestelling definitief opgenomen in het bestelboek van Sophia Perla en kunt U de bestelling niet meer aanpassen.  <br /> <br /> U kunt uw eigen bestellinghistorie inzien door op de knop ‘Zoek’ te klikken. U krijgt dan de eerste order te zien die U bij Sophia Perla via deze bestelpagina heeft opgegeven. Met de knoppen ‘begin’, ‘verder’, ‘terug’ en ‘eind’ kunt U heen en terug gaan in Uw historie. En, zoals gezegd: als een bestelling vandaag is opgegeven kunt U die bestelling nog aanpassen. <br /> <br /> Bij veel plekken op scherm verschijnt een help tekst als U met de muis over dat gebied heen beweegt. U kunt die helpteksten uit/inschakelen door met de  muis op 'help'  te klikken en vervolgens op de knop 'Tooltips uit'/'Tooltips aan'  te klikken. <br /> <br /> U kunt deze tekst altijd oproepen door met de muis naar ' help'  te gaan en dan te klikken op 'Welkom tekst'";
             this.sDialogMsg = welcomeMessage;
         }
         if (Sortof == "tooltiptoggle") {

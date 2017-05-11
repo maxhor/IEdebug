@@ -404,10 +404,10 @@ export class qtService {
 
         this.user = user;
         this.dbname = user.dbname
-               
-        
+
+
         this.tbversion = JSON.parse(window.localStorage.getItem('tbversion'));
-        if (window.location.href.indexOf("localhost")<0) {
+        if (window.location.href.indexOf("localhost") < 0) {
             this.ServerConstants.rooturl = user.dbname + "/";
             this.ServerConstants.loginurl = "login/";
         }
@@ -498,6 +498,7 @@ export class qtService {
 
 
     initUser_part3(serverversions) {
+     
         this.cursorShape = "wait";
 
         if (window.localStorage.getItem('seizoen') == null) {
@@ -1360,19 +1361,20 @@ export class qtService {
                     _tthis.bSaving = false;
                 })
         }
-
     }
 
     setdefaults() {
         var index = 0;
         for (var i = 0; i < this.user["defaults"].length; i++) {
-debugger;
             if (this.kopForm.controls[this.user["defaults"][i].pair[0]] != undefined) {
                 this.kopForm.controls[this.user["defaults"][i].pair[0]].setValue(this.user["defaults"][i].pair[1]);
             }
             else {
                 let fieldindex = this.formdef["bootstrapcolumns"][0].fielddefs.findIndex(fielddef => fielddef.name == this.user["defaults"][i].pair[0]);
-                this.formdef["bootstrapcolumns"][0].fielddefs[fieldindex].value = this.user["defaults"][i].pair[1];
+                if (fieldindex >= 0) {
+                    this.formdef["bootstrapcolumns"][0].fielddefs[fieldindex].value = this.user["defaults"][i].pair[1];
+                }
+
             }
             if (this.user["defaults"][i].pair[0] == 'seizoen') {
                 if (this.kopForm.controls["seizoen"] != undefined) {
@@ -2505,6 +2507,7 @@ debugger;
     }
 
     HideMessage() {
+       
         this.bMessage = false;
         this.MessageClass = "";
         //  this.sDialogHeader = "";
@@ -2831,7 +2834,7 @@ debugger;
                 }
                 _rows[index][maat] = this.formdef["bootstrapcolumns"][this.btc_idx].rows[i].values[this.aantal_idx] * -1;
 
-               
+
             }
         }
 
@@ -2995,8 +2998,8 @@ debugger;
                             index = this.rowsvrrdmatrix.findIndex(vrrdart => vrrdart.Kleur === kleur);
                             if (index >= 0) {
                                 vrrdaantal = this.rowsvrrdmatrix[index][maat] * 1;
-                                if(vrrdaantal<0){
-                                    vrrdaantal=0;//in case of negative stock, set stock=0 so user can always change oldamount into a new lesser amount
+                                if (vrrdaantal < 0) {
+                                    vrrdaantal = 0;//in case of negative stock, set stock=0 so user can always change oldamount into a new lesser amount
                                 }
                                 if (isNaN(vrrdaantal)) {
                                     vrrdaantal = 0;
@@ -3005,7 +3008,7 @@ debugger;
                                 let index2 = this.lookup_userdata[propertyname];
                                 let oudaantal = 0;
                                 if (index2 >= 0) {
-                                    oudaantal = this.formdef["bootstrapcolumns"][this.btc_idx].rows[index2].oldvalues[this.aantal_idx] *-1;
+                                    oudaantal = this.formdef["bootstrapcolumns"][this.btc_idx].rows[index2].oldvalues[this.aantal_idx] * -1;
                                 }
 
                                 if (vrrdaantal < aantal - oudaantal && aantal > 0 && this.seizoen["iscurrent"] != "1") {
@@ -3639,7 +3642,7 @@ debugger;
                     }
                     else {
                         this.tttop = (event.currentTarget.getBoundingClientRect().top) + "px";
-                        this.ttleft = event.currentTarget.getBoundingClientRect().right  + "px";
+                        this.ttleft = event.currentTarget.getBoundingClientRect().right + "px";
                     }
 
                 }
@@ -3950,7 +3953,7 @@ debugger;
             this.sDialogHeader = "Bestelpagina van Sophia Perla";
             let welcomeMessage = "";
             welcomeMessage = welcomeMessage + "Welkom op de bestelpagina van Sophia Perla. <br /> <br />";
-            welcomeMessage = welcomeMessage + "Geef Uw bestelling op door eerst op de foto's te klikken van de gewenste artikelen. Nadat U de foto's heeft verborgen met de knop 'verberg' kunt U van de aantallen per maat / kleur opgeven. Als U uw bestelling bewaart (klik de knop 'Bewaar'), dan heeft U de rest van de dag de gelegenheid om die bestelling nog aan te passen. Pas aan het einde van de dag wordt de bestelling definitief opgenomen in het bestelboek van Sophia Perla en kunt U de bestelling niet meer aanpassen.  <br /> <br /> U kunt uw eigen bestellinghistorie inzien door op de knop ‘Zoek’ te klikken. U krijgt dan de eerste order te zien die U bij Sophia Perla via deze bestelpagina heeft opgegeven. Met de knoppen ‘begin’, ‘verder’, ‘terug’ en ‘eind’ kunt U heen en terug gaan in Uw historie. En, zoals gezegd: als een bestelling vandaag is opgegeven kunt U die bestelling nog aanpassen. <br /> <br /> Bij veel plekken op scherm verschijnt een help tekst als U met de muis over dat gebied heen beweegt. U kunt die helpteksten uit/inschakelen door met de  muis op 'help'  te klikken en vervolgens op de knop 'Tooltips uit'/'Tooltips aan'  te klikken. <br /> <br /> U kunt deze tekst altijd oproepen door met de muis naar ' help'  te gaan en dan te klikken op 'Welkom tekst'";
+            welcomeMessage = welcomeMessage + "Geef Uw bestelling op door eerst op de foto's te klikken van de gewenste artikelen. Dan verbergt U de foto's met de knop 'verberg'. Het window om de gewenste aantallen per maat / kleur in te geven wordt daarmee zichtbaar. Als U uw bestelling bewaart (klik de knop 'Bewaar'), dan heeft U de rest van de dag de gelegenheid om die bestelling nog aan te passen. Pas aan het einde van de dag wordt de bestelling definitief opgenomen in het bestelboek van Sophia Perla en kunt U de bestelling niet meer aanpassen.  <br /> <br /> U kunt uw eigen bestellinghistorie inzien door op de knop ‘Zoek’ te klikken. U krijgt dan de eerste order te zien die U bij Sophia Perla via deze bestelpagina heeft opgegeven. Met de knoppen ‘begin’, ‘verder’, ‘terug’ en ‘eind’ kunt U heen en terug gaan in Uw historie. En, zoals gezegd: als een bestelling vandaag is opgegeven kunt U die bestelling nog aanpassen. <br /> <br /> Bij veel plekken op scherm verschijnt een help tekst als U met de muis over dat gebied heen beweegt. U kunt die helpteksten uit/inschakelen door met de  muis op 'help'  te klikken en vervolgens op de knop 'Tooltips uit'/'Tooltips aan'  te klikken. <br /> <br /> U kunt deze tekst altijd oproepen door met de muis naar ' help'  te gaan en dan te klikken op 'Welkom tekst'";
             this.sDialogMsg = welcomeMessage;
 
         }
