@@ -101,7 +101,7 @@ export class login implements OnInit {
         //var headers = new Headers();
         var _tthis = this;
         this.sErrorMsg = "";
-
+debugger;
 
 
         // headers.append('Content-Type', 'application/json');
@@ -159,7 +159,7 @@ export class login implements OnInit {
 
                     }
                     else if (data.loginstatus == -3) {
-                        _tthis.sLoginBanner = "Fout in de server, " + data.message;
+                        _tthis.sLoginBanner = "Onverwachte fout in de database";
                     }
                     else if (data.loginstatus == "0") {
                         _tthis.sLoginLabel = "Login";
