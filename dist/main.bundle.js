@@ -1217,7 +1217,7 @@ var qtService = (function () {
         }
         if (this.tbversion.seizoen != tbversion.seizoen || window.localStorage.getItem('seizoen') == null || this.user.relatienr == "0") {
             this.lookup_generic("seizoenlookup").subscribe(function (data) {
-                if (data.TableName.substring(0, 5) == "error") {
+                if (data.TableName.substring(0, 16) == "onverwachte fout") {
                     _this.bError = true;
                     _this.sErrorMsg = data.TableName;
                 }
@@ -1238,7 +1238,7 @@ var qtService = (function () {
         }
         if (this.tbversion.relatie != tbversion.relatie || window.localStorage.getItem('relatie') == null || this.user.relatienr == "0") {
             this.lookup_generic("klantlookup").subscribe(function (data) {
-                if (data.TableName.substring(0, 5) == "error") {
+                if (data.TableName.substring(0, 16) == "onverwachte fout") {
                     _this.bError = true;
                     _this.sErrorMsg = data.TableName;
                 }
@@ -1255,7 +1255,7 @@ var qtService = (function () {
         }
         if (this.tbversion.adres != tbversion.adres || window.localStorage.getItem('adres') == null || this.user.relatienr == "0") {
             this.lookup_generic("adreslookup").subscribe(function (data) {
-                if (data.TableName.substring(0, 5) == "error") {
+                if (data.TableName.substring(0, 16) == "onverwachte fout") {
                     _this.bError = true;
                     _this.sErrorMsg = data.TableName;
                 }
@@ -1331,7 +1331,7 @@ var qtService = (function () {
         if (!this.bOffLine) {
             this.lookup_generic("voorraadlookup").subscribe(function (data) {
                 _this.all_voorraad = data;
-                if (data.TableName.substring(0, 5) == "error") {
+                if (data.TableName.substring(0, 16) == "onverwachte fout") {
                     _this.bError = true;
                     _this.sErrorHeader = "fout bij ophalen " + data.TableName;
                     _this.sErrorMsg = data.TableName;
@@ -1343,7 +1343,7 @@ var qtService = (function () {
             });
             this.lookup_generic("art_stock_is_counted_lookup").subscribe(function (data) {
                 _this.all_art_is_counted = data["rows"].map(function (row) { return row.values[0]; });
-                if (data.TableName.substring(0, 5) == "error") {
+                if (data.TableName.substring(0, 16) == "onverwachte fout") {
                     _this.bError = true;
                     _this.sErrorMsg = data.TableName;
                 }
@@ -2489,7 +2489,7 @@ var qtService = (function () {
         this.disable_VrrdFris = true;
         this.lookup_generic("voorraadlookup").subscribe(function (data) {
             _tthis.all_voorraad = data;
-            if (data.TableName.substring(0, 5) == "error") {
+            if (data.TableName.substring(0, 16) == "onverwachte fout") {
                 _tthis.bError = true;
                 _this.sErrorMsg = data.TableName;
             }

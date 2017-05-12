@@ -521,7 +521,7 @@ export class qtService {
         if (this.tbversion.seizoen != tbversion.seizoen || window.localStorage.getItem('seizoen') == null || this.user.relatienr == "0") {
             this.lookup_generic("seizoenlookup").subscribe(
                 data => {
-                    if (data.TableName.substring(0, 5) == "error") {
+                    if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
                         this.sErrorMsg = data.TableName
                     }
@@ -548,7 +548,7 @@ export class qtService {
         if (this.tbversion.relatie != tbversion.relatie || window.localStorage.getItem('relatie') == null || this.user.relatienr == "0") {
             this.lookup_generic("klantlookup").subscribe(
                 data => {
-                    if (data.TableName.substring(0, 5) == "error") {
+                    if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
                         this.sErrorMsg = data.TableName
                     }
@@ -567,7 +567,7 @@ export class qtService {
         if (this.tbversion.adres != tbversion.adres || window.localStorage.getItem('adres') == null || this.user.relatienr == "0") {
             this.lookup_generic("adreslookup").subscribe(
                 data => {
-                    if (data.TableName.substring(0, 5) == "error") {
+                    if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
                         this.sErrorMsg = data.TableName
                     }
@@ -653,7 +653,7 @@ export class qtService {
                 data => {
                     this.all_voorraad = data;
 
-                    if (data.TableName.substring(0, 5) == "error") {
+                    if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
                         this.sErrorHeader = "fout bij ophalen " + data.TableName;
                         this.sErrorMsg = data.TableName
@@ -670,7 +670,7 @@ export class qtService {
                 data => {
                     this.all_art_is_counted = data["rows"].map(row => row.values[0]);
 
-                    if (data.TableName.substring(0, 5) == "error") {
+                    if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
                         this.sErrorMsg = data.TableName
                     }
@@ -2141,7 +2141,7 @@ export class qtService {
         this.lookup_generic("voorraadlookup").subscribe(
             data => {
                 _tthis.all_voorraad = data;
-                if (data.TableName.substring(0, 5) == "error") {
+                if (data.TableName.substring(0, 16) == "onverwachte fout") {
                     _tthis.bError = true;
                     this.sErrorMsg = data.TableName
                 }
