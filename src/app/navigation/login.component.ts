@@ -101,9 +101,6 @@ export class login implements OnInit {
         //var headers = new Headers();
         var _tthis = this;
         this.sErrorMsg = "";
-debugger;
-
-
         // headers.append('Content-Type', 'application/json');
         // headers.append('Access-Control-Allow-Origin', 'http://localhost:3000');
         // headers.append('Accept', 'q=0.8;application/json;q=0.9');

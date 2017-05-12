@@ -523,6 +523,7 @@ export class qtService {
                 data => {
                     if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
+                        this.sErrorHeader = "fout bij ophalen seizoenen" ;
                         this.sErrorMsg = data.TableName
                     }
                     else {
@@ -550,6 +551,7 @@ export class qtService {
                 data => {
                     if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
+                        this.sErrorHeader = "fout bij ophalen klanten" ;
                         this.sErrorMsg = data.TableName
                     }
                     else {
@@ -569,6 +571,7 @@ export class qtService {
                 data => {
                     if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
+                        this.sErrorHeader = "fout bij ophalen adressen" ;
                         this.sErrorMsg = data.TableName
                     }
                     else {
@@ -619,6 +622,7 @@ export class qtService {
                     if (data[0]["pair"] != undefined) {
                         if (data[0].pair[0] == "error") {
                             this.bError = true;
+                            this.sErrorHeader = "fout bij ophalen artikelen" ;
                             this.sErrorMsg = data[0].pair[1];
                         }
                     }
@@ -655,7 +659,7 @@ export class qtService {
 
                     if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
-                        this.sErrorHeader = "fout bij ophalen " + data.TableName;
+                        this.sErrorHeader = "fout bij ophalen voorraad" ;
                         this.sErrorMsg = data.TableName
                     }
                     else {
@@ -672,6 +676,7 @@ export class qtService {
 
                     if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
+                        this.sErrorHeader = "fout bij ophalen voorraad" ;
                         this.sErrorMsg = data.TableName
                     }
                 });

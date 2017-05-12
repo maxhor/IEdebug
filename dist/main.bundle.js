@@ -570,7 +570,6 @@ var login = (function () {
         //var headers = new Headers();
         var _tthis = this;
         this.sErrorMsg = "";
-        debugger;
         // headers.append('Content-Type', 'application/json');
         // headers.append('Access-Control-Allow-Origin', 'http://localhost:3000');
         // headers.append('Accept', 'q=0.8;application/json;q=0.9');
@@ -1219,6 +1218,7 @@ var qtService = (function () {
             this.lookup_generic("seizoenlookup").subscribe(function (data) {
                 if (data.TableName.substring(0, 16) == "onverwachte fout") {
                     _this.bError = true;
+                    _this.sErrorHeader = "fout bij ophalen seizoenen";
                     _this.sErrorMsg = data.TableName;
                 }
                 else {
@@ -1240,6 +1240,7 @@ var qtService = (function () {
             this.lookup_generic("klantlookup").subscribe(function (data) {
                 if (data.TableName.substring(0, 16) == "onverwachte fout") {
                     _this.bError = true;
+                    _this.sErrorHeader = "fout bij ophalen klanten";
                     _this.sErrorMsg = data.TableName;
                 }
                 else {
@@ -1257,6 +1258,7 @@ var qtService = (function () {
             this.lookup_generic("adreslookup").subscribe(function (data) {
                 if (data.TableName.substring(0, 16) == "onverwachte fout") {
                     _this.bError = true;
+                    _this.sErrorHeader = "fout bij ophalen adressen";
                     _this.sErrorMsg = data.TableName;
                 }
                 else {
@@ -1304,6 +1306,7 @@ var qtService = (function () {
                 if (data[0]["pair"] != undefined) {
                     if (data[0].pair[0] == "error") {
                         _this.bError = true;
+                        _this.sErrorHeader = "fout bij ophalen artikelen";
                         _this.sErrorMsg = data[0].pair[1];
                     }
                 }
@@ -1333,7 +1336,7 @@ var qtService = (function () {
                 _this.all_voorraad = data;
                 if (data.TableName.substring(0, 16) == "onverwachte fout") {
                     _this.bError = true;
-                    _this.sErrorHeader = "fout bij ophalen " + data.TableName;
+                    _this.sErrorHeader = "fout bij ophalen voorraad";
                     _this.sErrorMsg = data.TableName;
                 }
                 else {
@@ -1345,6 +1348,7 @@ var qtService = (function () {
                 _this.all_art_is_counted = data["rows"].map(function (row) { return row.values[0]; });
                 if (data.TableName.substring(0, 16) == "onverwachte fout") {
                     _this.bError = true;
+                    _this.sErrorHeader = "fout bij ophalen voorraad";
                     _this.sErrorMsg = data.TableName;
                 }
             });
