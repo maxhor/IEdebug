@@ -498,7 +498,7 @@ export class qtService {
 
 
     initUser_part3(serverversions) {
-     
+
         this.cursorShape = "wait";
 
         if (window.localStorage.getItem('seizoen') == null) {
@@ -523,7 +523,7 @@ export class qtService {
                 data => {
                     if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
-                        this.sErrorHeader = "fout bij ophalen seizoenen" ;
+                        this.sErrorHeader = "fout bij ophalen seizoenen";
                         this.sErrorMsg = data.TableName
                     }
                     else {
@@ -551,7 +551,7 @@ export class qtService {
                 data => {
                     if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
-                        this.sErrorHeader = "fout bij ophalen klanten" ;
+                        this.sErrorHeader = "fout bij ophalen klanten";
                         this.sErrorMsg = data.TableName
                     }
                     else {
@@ -571,7 +571,7 @@ export class qtService {
                 data => {
                     if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
-                        this.sErrorHeader = "fout bij ophalen adressen" ;
+                        this.sErrorHeader = "fout bij ophalen adressen";
                         this.sErrorMsg = data.TableName
                     }
                     else {
@@ -618,11 +618,12 @@ export class qtService {
 
             this.lookup_art("artikellookup").subscribe( //context is quite unclear to me. 
                 data => {
+
                     var strDummy = JSON.stringify(data);
                     if (data[0]["pair"] != undefined) {
                         if (data[0].pair[0] == "error") {
                             this.bError = true;
-                            this.sErrorHeader = "fout bij ophalen artikelen" ;
+                            this.sErrorHeader = "fout bij ophalen artikelen";
                             this.sErrorMsg = data[0].pair[1];
                         }
                     }
@@ -642,6 +643,7 @@ export class qtService {
             this.all_art = JSON.parse(window.localStorage.getItem('artikelen'));
             this.createArtGallery();
             this.cursorShape = "auto";
+
             this.disable_nwArtikel = false;
             this.bArtikelenFetched = true;
             this.disable_search = false;
@@ -659,7 +661,7 @@ export class qtService {
 
                     if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
-                        this.sErrorHeader = "fout bij ophalen voorraad" ;
+                        this.sErrorHeader = "fout bij ophalen voorraad";
                         this.sErrorMsg = data.TableName
                     }
                     else {
@@ -676,7 +678,7 @@ export class qtService {
 
                     if (data.TableName.substring(0, 16) == "onverwachte fout") {
                         this.bError = true;
-                        this.sErrorHeader = "fout bij ophalen voorraad" ;
+                        this.sErrorHeader = "fout bij ophalen voorraad";
                         this.sErrorMsg = data.TableName
                     }
                 });
@@ -709,9 +711,8 @@ export class qtService {
 
         this.createArtGallery(); //under subscribe, this=safesubscriber. Still, this works. Whatever
         this.cursorShape = "auto";
+
         this.disable_nwArtikel = false;
-
-
         this.bArtikelenFetched = true;
         this.disable_search = false;
         this.disable_clear = false;
@@ -833,7 +834,7 @@ export class qtService {
         if (localVersion != serverVersion || window.localStorage.getItem('blank_order') == null) {
             var _tthis = this;
             this.getblankfromdb(this.formname).subscribe(data => {
-
+                
                 var strDummy = JSON.stringify(data);
                 if (data.Status != "Ok") {
                     _tthis.sErrorMsg = data.Message;
@@ -853,6 +854,7 @@ export class qtService {
         }
         else {
             this.formdef = JSON.parse(window.localStorage.getItem('blank_order'));
+            
             this.createForm(null);
             this.createForm("klant");
         }
@@ -1140,6 +1142,7 @@ export class qtService {
             map(res => res.json()).subscribe((data) => {
                 //   console.log(data);
                 this.cursorShape = "auto";
+
                 if (data.Status == "Ok") {
 
 
@@ -2105,7 +2108,7 @@ export class qtService {
                         voorraad = null;
                         for (var m = startindex; m < this.all_voorraad["rows"].length; m++) {
                             if (this.all_voorraad["rows"][m].values[art_idx] != _artstam.artikelnr) {
-                                m = this.all_voorraad["rows"].length;
+                                m = 1000000; //stop this artikel
                             }
                             else if (
                                 this.all_voorraad["rows"][m].values[dim1waarde_idx] == _artstam.artkleur[j] &&
@@ -2119,10 +2122,10 @@ export class qtService {
 
                     _rowdata[_artstam.artmaat[k]] = voorraad;
                 }
-                if (totvoorraad >= 0) {
+                //if (totvoorraad >= 0) {
                     _rows_all_voorraad.push(_rowdata);
                     _rowdata["Totaal"] = totvoorraad;
-                }
+                //}
 
             }
 
@@ -2512,7 +2515,7 @@ export class qtService {
     }
 
     HideMessage() {
-       
+
         this.bMessage = false;
         this.MessageClass = "";
         //  this.sDialogHeader = "";
@@ -2571,13 +2574,13 @@ export class qtService {
     art_add_from_gallery(art: artgallery) {
 
         if (this.voorraadmessage(art)) return;
-        if (this.all_voorraad==undefined) return;
+        if (this.all_voorraad == undefined) return;
         this.art_add(art["artikelnr"]);
         this.setmatrixrows_just_one_empty(art["artikelnr"]);
         //this.art_add(art["artikelnr"]);
         //this.art_add(art["artikelnr"]);
 
-        
+
 
     }
 
@@ -2607,7 +2610,7 @@ export class qtService {
 
         artikel = this.findartikelbyartnr(artikel.artikelnr);
 
-        
+
         this.getmatrixrows(artikel);
         this.getvrrdmatrixrows();
         // if (this.all_art_is_counted.indexOf(artnr) >= 0 || this.seizoen["iscurrent"] == "1") {
@@ -3206,11 +3209,11 @@ export class qtService {
         var _rows_disabled_cells = [];
         this.b_vrrd_single_item = true;
         this.button_singlevrrd_label = "alles";
-        if(this.all_voorraad==undefined){
-          let   _null_10 = [null,null,null,null,null,null,null,null,null,null];
-          for(var i=0;i < 30;i++) this.rows_disabled_cells.push(_null_10);
-         
-          return;
+        if (this.all_voorraad == undefined) {
+            let _null_10 = [null, null, null, null, null, null, null, null, null, null];
+            for (var i = 0; i < 30; i++) this.rows_disabled_cells.push(_null_10);
+
+            return;
         }
 
         startindex = this.all_voorraad["rows"].findIndex(row => row.values[art_idx] == this.matrixtitle);
@@ -3218,7 +3221,7 @@ export class qtService {
         this.bCounted = this.all_art_is_counted.indexOf(this.matrixtitle) >= 0 || this.seizoen["iscurrent"] == 1;
         // this.rowsvrrdmatrix= Object.assign({},this.rowsmatrix);
         this.rowsvrrdmatrix.length = 0;
-        
+
         var _tthis = this;
         this.rowsmatrix.forEach((row, loopcount) => {
             _row = new (rowdata);

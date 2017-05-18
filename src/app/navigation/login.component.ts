@@ -125,6 +125,7 @@ export class login implements OnInit {
         }
 
         if (loginstring.substring(0,4) == "test") {
+            debugger;
             let logindata: user = {
                 relatienr:"0",
                 email: "tester@test.nl",
