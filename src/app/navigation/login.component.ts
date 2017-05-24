@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
 import { Http, Headers } from '@angular/http';
-
+import { enableProdMode } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { ServerConstants } from '../services/constants.on_server';
 
@@ -23,7 +23,7 @@ export class login implements OnInit {
     bConnected = false;
     hideOffline = true;
     bpassworderror = false;
-    
+
     sc: ServerConstants;
     loginctrl;
     relatienr = "0";
@@ -37,6 +37,9 @@ export class login implements OnInit {
     constructor(private fb: FormBuilder, private http: Http, private _sc: ServerConstants) {
         this.loginctrl = fb.group;
         this.sc = _sc;
+        if (!/localhost/.test(document.location.host)) {
+            enableProdMode();
+        }
         // this.buildForm;
 
     }
@@ -45,7 +48,7 @@ export class login implements OnInit {
 
 
     ngOnInit(): void {
-        this.hideOffline=window.localStorage.getItem('user') == null;
+        this.hideOffline = window.localStorage.getItem('user') == null;
         this.checkconnection();
         this.buildForm();
     }
@@ -59,8 +62,8 @@ export class login implements OnInit {
         _ctrls["password"] = ['', Validators.required];
         _ctrls["password_controle"] = [{ value: '', disabled: true }];
 
-        this.loginForm = this.fb.group(_ctrls,{validator: this.compare_password});
-        
+        this.loginForm = this.fb.group(_ctrls, { validator: this.compare_password });
+
     }
 
     compare_password(ctrl) {
@@ -72,7 +75,7 @@ export class login implements OnInit {
                 // else {
                 //     ctrl.parent.get("password").errors=null;
                 //     ctrl.parent.get("password_controle").errors=null;
-                    
+
                 // }
             }
 
@@ -81,18 +84,20 @@ export class login implements OnInit {
 
     };
 
-    checkconnection(){
+    checkconnection() {
         var _url = this.sc.loginurl + 'api/check_connection';
         var _tthis = this;
-        
-         this.http.get(_url,{ headers: this.sc.headers }).
-                map(res => res.json()).subscribe(data => {
-               
-                    if(data=="connected"){
-                        _tthis.bConnected = true;
-                    }},
-                    error=> {
-                        this.sErrorMsg="fout, status is" + error.status});
+
+        this.http.get(_url, { headers: this.sc.headers }).
+            map(res => res.json()).subscribe(data => {
+
+                if (data == "connected") {
+                    _tthis.bConnected = true;
+                }
+            },
+            error => {
+                this.sErrorMsg = "fout, status is" + error.status
+            });
     }
 
     login(event) {
@@ -106,7 +111,7 @@ export class login implements OnInit {
         // headers.append('Accept', 'q=0.8;application/json;q=0.9');
 
 
-      
+
         var name = this.loginForm.value;
         let loginstring = this.loginForm.controls["email"].value;
         if (this.bHidePasswordControle) {
@@ -124,14 +129,14 @@ export class login implements OnInit {
             });
         }
 
-        if (loginstring.substring(0,4) == "test") {
+        if (loginstring.substring(0, 4) == "test") {
             debugger;
             let logindata: user = {
-                relatienr:"0",
+                relatienr: "0",
                 email: "tester@test.nl",
                 role: "admin",
                 defaults: [{ "pair": ["seizoen", "2017 Voorjaar"] }, { "pair": ["verkoopjn", "1"] }]
-               
+
             };
             _tthis.LoggedIn.emit(logindata);
             _tthis.bLoggedIn = true;
@@ -141,7 +146,7 @@ export class login implements OnInit {
             this.http.post(_url, body, { headers: this.sc.headers }).
                 map(res => res.json()).subscribe((data) => {
                     let strDummy = JSON.stringify(data);
-                    
+
                     if (data == null) {
 
                     }
@@ -163,7 +168,7 @@ export class login implements OnInit {
                         _tthis.sLoginLabel = "Login";
                         _tthis.bHidePasswordControle = true;
                     }
-                    else if (data.loginstatus == "Ok"){
+                    else if (data.loginstatus == "Ok") {
                         _tthis.LoggedIn.emit(data);
                         _tthis.bLoggedIn = true;
                     }
@@ -174,22 +179,22 @@ export class login implements OnInit {
 
     }
 
-offlineinit(){
-    let email = this.loginForm.controls["email"].value;
-    this.OfflineInit.emit(email);
-}
+    offlineinit() {
+        let email = this.loginForm.controls["email"].value;
+        this.OfflineInit.emit(email);
+    }
 
     errorclear() {
         this.sErrorMsg = "";
-        
+
     }
 
-    LoginDisabledMsg(){
-        if(!this.loginForm.valid){
-            this.sErrorMsg="passwoorden zijn niet gelijk";
+    LoginDisabledMsg() {
+        if (!this.loginForm.valid) {
+            this.sErrorMsg = "passwoorden zijn niet gelijk";
         }
-        else{
-            this.sErrorMsg="";
+        else {
+            this.sErrorMsg = "";
         }
         var i = 0;
     }
@@ -209,5 +214,5 @@ interface user {
     landcode?: string;
     loginstatus?: string;
     message?: string;
-    defaults?: [{pair:string[]}];
+    defaults?: [{ pair: string[] }];
 }

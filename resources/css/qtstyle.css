@@ -428,10 +428,30 @@ textarea {
    ;
 }
 
-.mytooltip {
+.qmytooltip {
     width: 120px;
     position: absolute;
     display: inline-block;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+ 
+    border-radius: 6px;
+
+    padding: 5px 0;
+    
+    
+    border-width: 5px;
+    border-style: solid;
+    
+    border-color: #555 transparent transparent transparent;
+    z-index: 1;
+}
+
+.mytooltip {
+    width: 120px;
+    position: absolute;
+  
     background-color: #555;
     color: #fff;
     text-align: center;
@@ -661,6 +681,11 @@ label{
     height: 28px;
     border-radius: 4px;
     border: 1px solid  #80ceff;
+}
+
+.ui-button:disabled{
+    
+    color: #279cff!important;
 }
 
 .detail{

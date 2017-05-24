@@ -76,7 +76,7 @@ import { qtService } from '../services/qtrack.service';
    <p class = "inlinemsg">{{qtService.sBevestigdMessage}}</p>
   </div>
 
-  <div class="mytooltip" [hidden]="qtService.bToolTipHide"  [style.top]="qtService.tttop" [style.left]="qtService.ttleft">{{qtService.sToolTip}}</div>
+  <div class="mytooltip" [hidden]="qtService.bToolTipHide" (mouseover)="qtService.hidetooltip()" [style.top]="qtService.tttop" [style.left]="qtService.ttleft">{{qtService.sToolTip}}</div>
   </div>
 
       

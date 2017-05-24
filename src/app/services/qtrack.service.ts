@@ -2145,6 +2145,7 @@ export class qtService {
 
     getvoorraad() {
         var _tthis = this;
+     
         this.disable_VrrdFris = true;
         this.lookup_generic("voorraadlookup").subscribe(
             data => {
