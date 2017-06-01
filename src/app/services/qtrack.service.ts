@@ -13,12 +13,10 @@ import { ServerConstants } from './constants.on_server';
 //this.dom_elements._results[5].nativeElement.checked=true
 
 export class qtService {
-
+tt;
     cb1: HTMLElement;
     cb2: string;
     blur: "blur(3px)";
-    tt;
-
     template_element: any;
     bLoggedIn = false;
     bError = false;
