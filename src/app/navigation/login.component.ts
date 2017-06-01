@@ -38,7 +38,7 @@ export class login implements OnInit {
         this.loginctrl = fb.group;
         this.sc = _sc;
         if (!/localhost/.test(document.location.host)) {
-            enableProdMode();
+           // enableProdMode();
         }
         // this.buildForm;
 
