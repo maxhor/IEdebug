@@ -790,22 +790,22 @@ tt;
         else {
             switch (tbname) {
                 case "seizoenlookup":
-                    _url = "mockapi/seizoen_lookup.jsn";
+                    _url = "../mockapi/seizoen_lookup.jsn";
                     break;
                 case "tbversion":
-                    _url = "mockapi/tbversion_lookup.jsn";
+                    _url = "../mockapi/tbversion_lookup.jsn";
                     break;
                 case "klantlookup":
-                    _url = "mockapi/klant_lookup.jsn";
+                    _url = "../mockapi/klant_lookup.jsn";
                     break;
                 case "adreslookup":
-                    _url = "mockapi/adres_lookup.jsn";
+                    _url = "../mockapi/adres_lookup.jsn";
                     break;
                 case "voorraadlookup":
-                    _url = "mockapi/voorraad_lookup.jsn";
+                    _url = "../mockapi/voorraad_lookup.jsn";
                     break;
                 case "art_stock_is_counted_lookup":
-                    _url = "mockapi/stock_counted.jsn";
+                    _url = "../mockapi/stock_counted.jsn";
                     break;
                 default:
                     _url = "";

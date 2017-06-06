@@ -134,6 +134,8 @@ export class login implements OnInit {
             let logindata: user = {
                 relatienr: "0",
                 email: "tester@test.nl",
+                naam_plaats:  "tester",
+                dbname: "mockdata in project",
                 role: "admin",
                 defaults: [{ "pair": ["seizoen", "2017 Voorjaar"] }, { "pair": ["verkoopjn", "1"] }]
 
